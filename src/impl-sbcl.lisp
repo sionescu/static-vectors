@@ -84,18 +84,19 @@ foreign memory so you must always call FREE-STATIC-VECTOR to free it."
            (%choose-initial-element element-type initial-element initial-element-p)))
       (%allocate-static-vector allocation-size widetag length actual-initial-element))))
 
-(define-compiler-macro make-static-vector (&whole whole length &key (element-type ''(unsigned-byte 8))
+(define-compiler-macro make-static-vector (&whole whole &environment env
+                                           length &key (element-type ''(unsigned-byte 8))
                                            (initial-element 0 initial-element-p))
   (cond
-    ((constantp element-type)
+    ((constantp element-type env)
      (let ((element-type (eval element-type)))
        (multiple-value-bind (widetag n-bits)
            (vector-widetag-and-n-bits element-type)
          (let ((actual-initial-element
-                (if (constantp initial-element)
+                (if (constantp initial-element env)
                     (%choose-initial-element element-type (eval initial-element) initial-element-p)
                     `(%choose-initial-element ',element-type ,initial-element ,initial-element-p))))
-           (if (constantp length)
+           (if (constantp length env)
                (let ((%length% (eval length)))
                  (check-type %length% non-negative-fixnum)
                  `(sb-ext:truly-the
