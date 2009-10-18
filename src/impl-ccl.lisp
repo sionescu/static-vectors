@@ -53,15 +53,6 @@ foreign memory so you must always call FREE-STATIC-VECTOR to free it."
                   (%allocate-static-vector ,%length% ',element-type ,actual-initial-element)))))))
     (t whole)))
 
-(declaim (inline static-vector-address))
-(defun static-vector-address (vector)
-  "Return a foreign pointer to VECTOR(including its header).
-VECTOR must be a vector created by MAKE-STATIC-VECTOR."
-  (unless (typep vector 'ccl::ivector)
-    (ccl::report-bad-arg vector 'ccl::ivector))
-  (let ((ptr (ccl:%null-ptr)))
-    (ccl::%%make-disposable vector ptr)))
-
 (declaim (inline static-vector-pointer))
 (defun static-vector-pointer (vector)
   "Return a foreign pointer to VECTOR's data.
