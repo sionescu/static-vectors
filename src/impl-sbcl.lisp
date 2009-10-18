@@ -113,7 +113,8 @@ foreign memory so you must always call FREE-STATIC-VECTOR to free it."
 
 (declaim (inline static-vector-address))
 (defun static-vector-address (vector)
-  "Return a foreign pointer to VECTOR(including its header)."
+  "Return a foreign pointer to VECTOR(including its header).
+VECTOR must be a vector created by MAKE-STATIC-VECTOR."
   (logandc2 (sb-kernel:get-lisp-obj-address vector)
             sb-vm:lowtag-mask))
 
