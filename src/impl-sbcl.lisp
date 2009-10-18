@@ -113,7 +113,7 @@ VECTOR must be a vector created by MAKE-STATIC-VECTOR."
             sb-vm:lowtag-mask))
 
 (declaim (inline static-vector-pointer))
-(defun static-vector-data-pointer (vector)
+(defun static-vector-pointer (vector)
   "Return a foreign pointer to VECTOR's data.
 VECTOR must be a vector created by MAKE-STATIC-VECTOR."
   (make-pointer (+ (static-vector-address vector)

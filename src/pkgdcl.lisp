@@ -14,7 +14,7 @@
    #:with-static-vector
 
    ;; Accessors
-   #:static-vector-data-pointer
+   #:static-vector-pointer
 
    ;; Foreign memory operations
    #:copy-foreign-memory

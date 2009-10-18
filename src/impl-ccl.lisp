@@ -63,7 +63,7 @@ VECTOR must be a vector created by MAKE-STATIC-VECTOR."
     (ccl::%%make-disposable vector ptr)))
 
 (declaim (inline static-vector-pointer))
-(defun static-vector-data-pointer (vector)
+(defun static-vector-pointer (vector)
   "Return a foreign pointer to VECTOR's data.
 VECTOR must be a vector created by MAKE-STATIC-VECTOR."
   (unless (typep vector 'ccl::ivector)
