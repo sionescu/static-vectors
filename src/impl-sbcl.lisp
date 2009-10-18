@@ -136,5 +136,4 @@ within its dynamic extent. The vector is freed upon exit."
      (let ((,var (make-static-vector ,length ,@args)))
        (unwind-protect
             (sb-sys:with-interrupts ,@body)
-         (when ,var (free-static-vector ,var))
-         nil))))
+         (when ,var (free-static-vector ,var))))))

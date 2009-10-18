@@ -88,5 +88,4 @@ within its dynamic extent. The vector is freed upon exit."
           (progn
             (setf ,var (make-static-vector ,length ,@args))
             ,@body)
-       (when ,var (free-static-vector ,var))
-       nil)))
+       (when ,var (free-static-vector ,var)))))
