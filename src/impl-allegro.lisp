@@ -19,7 +19,7 @@
 
 (declaim (inline %allocate-static-vector))
 (defun %allocate-static-vector (length element-type initial-element)
-  (make-array length :allocation :malloc
+  (make-array length :allocation :static
               :element-type element-type
               :initial-element initial-element))
 
