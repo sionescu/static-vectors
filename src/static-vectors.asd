@@ -9,4 +9,5 @@
   ;; :pathname (merge-pathnames #p"src/" *load-truename*)
   :components ((:file "pkgdcl")
                (:file "impl" :depends-on ("pkgdcl")
-                :pathname #+sbcl #p"impl-sbcl")))
+                :pathname #+sbcl #p"impl-sbcl"
+                          #+ccl  #p"impl-ccl")))
