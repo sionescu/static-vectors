@@ -22,15 +22,6 @@
   (fill (ccl:make-heap-ivector length element-type)
         initial-element))
 
-(declaim (inline %choose-initial-element))
-(defun %choose-initial-element (element-type initial-element initial-element-p)
-  (cond
-    (initial-element-p
-     (coerce initial-element element-type))
-    ((subtypep element-type 'number)
-     (coerce 0 element-type))
-    (t #\Null)))
-
 (defun make-static-vector (length &key (element-type '(unsigned-byte 8))
                            (initial-element 0 initial-element-p))
   "Create a simple vector of length LENGTH and type ELEMENT-TYPE which will

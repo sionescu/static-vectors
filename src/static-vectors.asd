@@ -8,6 +8,7 @@
   :depends-on (:alexandria :cffi)
   ;; :pathname (merge-pathnames #p"src/" *load-truename*)
   :components ((:file "pkgdcl")
-               (:file "impl" :depends-on ("pkgdcl")
+               (:file "common" :depends-on ("pkgdcl"))
+               (:file "impl" :depends-on ("pkgdcl" "common")
                 :pathname #+sbcl #p"impl-sbcl"
                           #+ccl  #p"impl-ccl")))
