@@ -9,12 +9,14 @@
 (defun fill-foreign-memory (pointer length value)
   "Fill LENGTH octets in foreign memory area POINTER with VALUE."
   (declare (sb-ext:muffle-conditions sb-ext:compiler-note))
-  (sb-kernel:system-area-ub8-fill value pointer 0 length))
+  (sb-kernel:system-area-ub8-fill value pointer 0 length)
+  pointer)
 
 (declaim (inline copy-foreign-memory))
 (defun copy-foreign-memory (src-ptr dst-ptr length)
   "Copy LENGTH octets from foreign memory area SRC-PTR to DST-PTR."
-  (sb-kernel:system-area-ub8-copy src-ptr 0 dst-ptr 0 length))
+  (sb-kernel:system-area-ub8-copy src-ptr 0 dst-ptr 0 length)
+  dst-ptr)
 
 (defconstant +array-header-size+
   (* sb-vm:vector-data-offset sb-vm:n-word-bytes))
