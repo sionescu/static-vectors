@@ -8,13 +8,12 @@
 (defpackage :static-vectors
   (:use #:common-lisp :alexandria :cffi)
   (:export
-   ;; Static vectors
+   ;; Constructors and destructors
    #:make-static-vector
    #:free-static-vector
    #:with-static-vector
 
    ;; Accessors
-   #:static-vector-address
    #:static-vector-data-pointer
 
    ;; Foreign memory operations
