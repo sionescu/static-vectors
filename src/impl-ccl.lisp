@@ -74,7 +74,8 @@ VECTOR must be a vector created by MAKE-STATIC-VECTOR."
 (declaim (inline free-static-vector))
 (defun free-static-vector (vector)
   "Free VECTOR, which must be a vector created by MAKE-STATIC-VECTOR."
-  (ccl:dispose-heap-ivector vector))
+  (ccl:dispose-heap-ivector vector)
+  (values))
 
 (defmacro with-static-vector ((var length &rest args
                                &key (element-type ''(unsigned-byte 8)) (initial-element 0))
