@@ -6,7 +6,6 @@
   :version "0.0.1"
   :licence "MIT"
   :depends-on (:alexandria :cffi)
-  ;; :pathname (merge-pathnames #p"src/" *load-truename*)
   :components ((:file "pkgdcl")
                (:file "common" :depends-on ("pkgdcl"))
                (:file "impl" :depends-on ("pkgdcl" "common")
