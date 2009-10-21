@@ -113,11 +113,13 @@ VECTOR must be a vector created by MAKE-STATIC-VECTOR."
             sb-vm:lowtag-mask))
 
 (declaim (inline static-vector-pointer))
-(defun static-vector-pointer (vector)
-  "Return a foreign pointer to VECTOR's data.
+(defun static-vector-pointer (vector &key (offset 0))
+  "Return a foreign pointer to the beginning of VECTOR + OFFSET octets.
 VECTOR must be a vector created by MAKE-STATIC-VECTOR."
+  (check-type offset unsigned-byte)
   (make-pointer (+ (static-vector-address vector)
-                   +array-header-size+)))
+                   +array-header-size+
+                   offset)))
 
 (declaim (inline free-static-vector))
 (defun free-static-vector (vector)

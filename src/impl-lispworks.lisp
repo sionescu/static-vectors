@@ -55,11 +55,12 @@ foreign memory so you must always call FREE-STATIC-VECTOR to free it."
     (t whole)))
 
 (declaim (inline static-vector-pointer))
-(defun static-vector-pointer (vector)
-  "Return a foreign pointer to VECTOR's data.
+(defun static-vector-pointer (vector &key (offset 0))
+  "Return a foreign pointer to the beginning of VECTOR + OFFSET octets.
 VECTOR must be a vector created by MAKE-STATIC-VECTOR."
+  (check-type offset unsigned-byte)
   (let ((ptr (null-pointer)))
-    (fli::set-dynamic-lisp-array-pointer ptr vector 0)))
+    (fli::set-dynamic-lisp-array-pointer ptr vector offset)))
 
 (declaim (inline free-static-vector))
 (defun free-static-vector (vector)

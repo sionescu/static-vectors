@@ -61,10 +61,11 @@ VECTOR must be a vector created by MAKE-STATIC-VECTOR."
   (excl:lispval-other-to-address vector))
 
 (declaim (inline static-vector-pointer))
-(defun static-vector-pointer (vector)
-  "Return a foreign pointer to VECTOR's data.
+(defun static-vector-pointer (vector &key (offset 0))
+  "Return a foreign pointer to the beginning of VECTOR + OFFSET octets.
 VECTOR must be a vector created by MAKE-STATIC-VECTOR."
-  (ff:fslot-address-typed :unsigned-char :lisp vector))
+  (check-type offset unsigned-byte)
+  (inc-pointer (ff:fslot-address-typed :unsigned-char :lisp vector) offset))
 
 (declaim (inline free-static-vector))
 (defun free-static-vector (vector)

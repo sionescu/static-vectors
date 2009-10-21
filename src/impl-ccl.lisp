@@ -54,13 +54,14 @@ foreign memory so you must always call FREE-STATIC-VECTOR to free it."
     (t whole)))
 
 (declaim (inline static-vector-pointer))
-(defun static-vector-pointer (vector)
-  "Return a foreign pointer to VECTOR's data.
+(defun static-vector-pointer (vector &key (offset 0))
+  "Return a foreign pointer to the beginning of VECTOR + OFFSET octets.
 VECTOR must be a vector created by MAKE-STATIC-VECTOR."
+  (check-type offset unsigned-byte)
   (unless (typep vector 'ccl::ivector)
     (ccl::report-bad-arg vector 'ccl::ivector))
-  (let ((ptr (ccl:%null-ptr)))
-    (ccl::%vect-data-to-macptr vector ptr)))
+  (let ((ptr (null-pointer)))
+    (inc-pointer (ccl::%vect-data-to-macptr vector ptr) offset)))
 
 (declaim (inline free-static-vector))
 (defun free-static-vector (vector)
