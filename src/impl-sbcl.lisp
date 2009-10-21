@@ -42,9 +42,11 @@
        (let ((length (sb-vm:fixnumize length)))
          (setf (mem-aref memblock :long 0) widetag
                (mem-aref memblock :long 1) length)
-         (fill (sb-kernel:%make-lisp-obj (logior (pointer-address memblock)
-                                                 sb-vm:other-pointer-lowtag))
-               initial-element))))))
+         (let ((array
+                (sb-kernel:%make-lisp-obj (logior (pointer-address memblock)
+                                                  sb-vm:other-pointer-lowtag))))
+           (when initial-element (fill array initial-element))
+           array))))))
 
 (declaim (inline %allocation-size))
 (defun %allocation-size (widetag length n-bits)
@@ -62,7 +64,7 @@
        +array-header-size+)))
 
 (defun make-static-vector (length &key (element-type '(unsigned-byte 8))
-                           (initial-element 0 initial-element-p))
+                           (initial-element nil))
   "Create a simple vector of length LENGTH and type ELEMENT-TYPE which will
 not be moved by the garbage collector. The vector might be allocated in
 foreign memory so you must always call FREE-STATIC-VECTOR to free it."
@@ -72,37 +74,31 @@ foreign memory so you must always call FREE-STATIC-VECTOR to free it."
   (multiple-value-bind (widetag n-bits)
       (vector-widetag-and-n-bits element-type)
     (let ((allocation-size
-           (%allocation-size widetag length n-bits))
-          (actual-initial-element
-           (%choose-initial-element element-type initial-element initial-element-p)))
-      (%allocate-static-vector allocation-size widetag length actual-initial-element))))
+           (%allocation-size widetag length n-bits)))
+      (%allocate-static-vector allocation-size widetag length initial-element))))
 
 (define-compiler-macro make-static-vector (&whole whole &environment env
                                            length &key (element-type ''(unsigned-byte 8))
-                                           (initial-element 0 initial-element-p))
+                                           (initial-element nil))
   (cond
     ((constantp element-type env)
      (let ((element-type (eval element-type)))
        (multiple-value-bind (widetag n-bits)
            (vector-widetag-and-n-bits element-type)
-         (let ((actual-initial-element
-                (if (constantp initial-element env)
-                    (%choose-initial-element element-type (eval initial-element) initial-element-p)
-                    `(%choose-initial-element ',element-type ,initial-element ,initial-element-p))))
-           (if (constantp length env)
-               (let ((%length% (eval length)))
-                 (check-type %length% non-negative-fixnum)
-                 `(sb-ext:truly-the
-                   (simple-array ,element-type (,%length%))
-                   (%allocate-static-vector ,(%allocation-size widetag %length% n-bits)
-                                            ,widetag ,%length% ,actual-initial-element)))
-               (with-gensyms (%length%)
-                 `(let ((,%length% ,length))
-                    (check-type ,%length% non-negative-fixnum)
-                    (sb-ext:truly-the
-                     (simple-array ,element-type (*))
-                     (%allocate-static-vector (%allocation-size ,widetag ,%length% ,n-bits)
-                                              ,widetag ,%length% ,actual-initial-element)))))))))
+         (if (constantp length env)
+             (let ((%length% (eval length)))
+               (check-type %length% non-negative-fixnum)
+               `(sb-ext:truly-the
+                 (simple-array ,element-type (,%length%))
+                 (%allocate-static-vector ,(%allocation-size widetag %length% n-bits)
+                                          ,widetag ,%length% ,initial-element)))
+             (with-gensyms (%length%)
+               `(let ((,%length% ,length))
+                  (check-type ,%length% non-negative-fixnum)
+                  (sb-ext:truly-the
+                   (simple-array ,element-type (*))
+                   (%allocate-static-vector (%allocation-size ,widetag ,%length% ,n-bits)
+                                            ,widetag ,%length% ,initial-element))))))))
     (t whole)))
 
 (declaim (inline static-vector-address))
@@ -129,7 +125,8 @@ VECTOR must be a vector created by MAKE-STATIC-VECTOR."
   (values))
 
 (defmacro with-static-vector ((var length &rest args
-                               &key (element-type ''(unsigned-byte 8)) (initial-element 0))
+                               &key (element-type ''(unsigned-byte 8))
+                               (initial-element nil))
                               &body body)
   "Bind PTR-VAR to a static vector of length LENGTH and execute BODY
 within its dynamic extent. The vector is freed upon exit."

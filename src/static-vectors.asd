@@ -7,8 +7,7 @@
   :licence "MIT"
   :depends-on (:alexandria :cffi)
   :components ((:file "pkgdcl")
-               (:file "common" :depends-on ("pkgdcl"))
-               (:file "impl" :depends-on ("pkgdcl" "common")
+               (:file "impl" :depends-on ("pkgdcl")
                       :pathname #+allegro   "impl-allegro"
                                 #+ccl       "impl-ccl"
                                 #+lispworks "impl-lispworks"
