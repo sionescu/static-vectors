@@ -16,6 +16,9 @@
    ;; Accessors
    #:static-vector-pointer
 
+   ;; CFFI wrapper type
+   #:static-vector
+
    ;; Foreign memory operations
    #:copy-foreign-memory
    #:fill-foreign-memory

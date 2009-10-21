@@ -18,4 +18,5 @@
                       :pathname #+allegro   "impl-allegro"
                                 #+ccl       "impl-ccl"
                                 #+lispworks "impl-lispworks"
-                                #+sbcl      "impl-sbcl")))
+                                #+sbcl      "impl-sbcl")
+               (:file "cffi-type-translator" :depends-on ("pkgdcl" "impl"))))
