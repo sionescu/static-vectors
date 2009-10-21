@@ -8,13 +8,13 @@
 (declaim (inline fill-foreign-memory))
 (defun fill-foreign-memory (pointer length value)
   "Fill LENGTH octets in foreign memory area POINTER with VALUE."
-  (foreign-funcall "memset" :pointer pointer :int value size-t length :pointer)
+  (fli:fill-foreign-object pointer :nelems length :byte value)
   pointer)
 
 (declaim (inline copy-foreign-memory))
 (defun copy-foreign-memory (src-ptr dst-ptr length)
   "Copy LENGTH octets from foreign memory area SRC-PTR to DST-PTR."
-  (foreign-funcall "memcpy" :pointer dst-ptr :pointer src-ptr size-t length :pointer)
+  (fli:replace-foreign-object dst-ptr src-ptr :nelems length)
   dst-ptr)
 
 (declaim (inline %allocate-static-vector))
