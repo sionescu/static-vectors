@@ -20,6 +20,6 @@
    #:static-vector
 
    ;; Foreign memory operations
-   #:copy-foreign-memory
+   #:replace-foreign-memory
    #:fill-foreign-memory
    ))

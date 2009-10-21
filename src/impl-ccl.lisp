@@ -11,8 +11,8 @@
   (#_memset pointer value length)
   pointer)
 
-(declaim (inline copy-foreign-memory))
-(defun copy-foreign-memory (src-ptr dst-ptr length)
+(declaim (inline replace-foreign-memory))
+(defun replace-foreign-memory (dst-ptr src-ptr length)
   "Copy LENGTH octets from foreign memory area SRC-PTR to DST-PTR."
   (#_memcpy dst-ptr src-ptr length)
   dst-ptr)
