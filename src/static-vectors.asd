@@ -9,6 +9,7 @@
   :components ((:file "pkgdcl")
                (:file "common" :depends-on ("pkgdcl"))
                (:file "impl" :depends-on ("pkgdcl" "common")
-                :pathname #+allegro  #p"impl-allegro"
-                          #+ccl      #p"impl-ccl"
-                          #+sbcl     #p"impl-sbcl")))
+                      :pathname #+allegro   "impl-allegro"
+                                #+ccl       "impl-ccl"
+                                #+lispworks "impl-lispworks"
+                                #+sbcl      "impl-sbcl")))
