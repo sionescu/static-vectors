@@ -14,7 +14,7 @@
                #+(or allegro ecl)
                (cffi-grovel:grovel-file "ffi-types" :depends-on ("pkgdcl"))
                (:file "impl"
-                      :depends-on ("pkgdcl" #+allegro "ffi-types")
+                      :depends-on ("pkgdcl" #+(or allegro ecl) "ffi-types")
                       :pathname #+allegro   "impl-allegro"
                                 #+ccl       "impl-ccl"
                                 #+ecl       "impl-ecl"
