@@ -50,12 +50,6 @@ foreign memory so you must always call FREE-STATIC-VECTOR to free it."
                 (%allocate-static-vector ,%length% ',element-type ,initial-element))))))
     (t whole)))
 
-(declaim (inline static-vector-address))
-(defun static-vector-address (vector)
-  "Return a foreign pointer to VECTOR(including its header).
-VECTOR must be a vector created by MAKE-STATIC-VECTOR."
-  (excl:lispval-other-to-address vector))
-
 (declaim (inline static-vector-pointer))
 (defun static-vector-pointer (vector &key (offset 0))
   "Return a foreign pointer to the beginning of VECTOR + OFFSET octets.
@@ -66,7 +60,7 @@ VECTOR must be a vector created by MAKE-STATIC-VECTOR."
 (declaim (inline free-static-vector))
 (defun free-static-vector (vector)
   "Free VECTOR, which must be a vector created by MAKE-STATIC-VECTOR."
-  (excl:aclfree (static-vector-address vector))
+  (excl:aclfree (excl:lispval-other-to-address vector))
   (values))
 
 (defmacro with-static-vector ((var length &rest args
