@@ -16,7 +16,7 @@
                (:file "impl"
                       :depends-on ("pkgdcl" #+(or allegro ecl) "ffi-types")
                       :pathname #+allegro   "impl-allegro"
-                                #+ccl       "impl-ccl"
+                                #+ccl       "impl-clozure"
                                 #+ecl       "impl-ecl"
                                 #+lispworks "impl-lispworks"
                                 #+sbcl      "impl-sbcl")
