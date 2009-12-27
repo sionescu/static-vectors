@@ -6,4 +6,4 @@
 (in-package :static-vectors)
 
 (defctype static-vector
-    (:wrapper :pointer :to-c static-vector-pointer))
+  (:wrapper :pointer :to-c static-vector-pointer))
