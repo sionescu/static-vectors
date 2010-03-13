@@ -31,11 +31,10 @@
 (declaim (inline static-alloc))
 (defun static-alloc (size)
   (with-foreign-object (ptr :pointer)
-    (let* ((page-size
-            (load-time-value (foreign-funcall "sysconf" :int +sc-pagesize+ :long)))
-           (retval
-            (foreign-funcall "posix_memalign" :pointer ptr size-t page-size size-t size :int)))
-      (if (zerop retval)
+    (let ((page-size
+            (load-time-value (foreign-funcall "sysconf" :int +sc-pagesize+ :long))))
+      (if (zerop (foreign-funcall "posix_memalign"
+                                  :pointer ptr size-t page-size size-t size :int))
           (mem-ref ptr :pointer)
           ;; FIXME: signal proper error condition
           (error 'storage-condition)))))
