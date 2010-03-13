@@ -1,6 +1,6 @@
 ;;;; -*- Mode: Lisp; Syntax: ANSI-Common-Lisp; indent-tabs-mode: nil -*-
 
-#+(or allegro ecl)
+#+(or allegro ecl sbcl)
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (asdf:oos 'asdf:load-op :cffi-grovel))
 
@@ -11,10 +11,10 @@
   :licence "MIT"
   :depends-on (:alexandria :cffi)
   :components ((:file "pkgdcl")
-               #+(or allegro ecl)
+               #+(or allegro ecl sbcl)
                (cffi-grovel:grovel-file "ffi-types" :depends-on ("pkgdcl"))
                (:file "impl"
-                      :depends-on ("pkgdcl" #+(or allegro ecl) "ffi-types")
+                      :depends-on ("pkgdcl" #+(or allegro ecl sbcl) "ffi-types")
                       :pathname #+allegro   "impl-allegro"
                                 #+ccl       "impl-clozure"
                                 #+ecl       "impl-ecl"

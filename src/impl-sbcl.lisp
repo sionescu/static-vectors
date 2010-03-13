@@ -28,25 +28,30 @@
       ((nil t) (error "~A is not a specializable array element type" type))
       (t       (sb-impl::%vector-widetag-and-n-bits type)))))
 
+(declaim (inline static-alloc))
+(defun static-alloc (size)
+  (with-foreign-object (ptr :pointer)
+    (let* ((page-size
+            (load-time-value (foreign-funcall "sysconf" :int +sc-pagesize+ :long)))
+           (retval
+            (foreign-funcall "posix_memalign" :pointer ptr size-t page-size size-t size :int)))
+      (if (zerop retval)
+          (mem-ref ptr :pointer)
+          ;; FIXME: signal proper error condition
+          (error 'storage-condition)))))
+
 (declaim (inline %allocate-static-vector))
 (defun %allocate-static-vector (allocation-size widetag length initial-element)
-  (let ((memblock (foreign-alloc :char :count allocation-size)))
-    (cond
-      ((null-pointer-p memblock)
-       ;; FIXME: signal proper error condition
-       (error 'storage-condition))
-      (t
-       ;; check for alignment
-       (assert (zerop (logand (pointer-address memblock) sb-vm:lowtag-mask)))
-       (fill-foreign-memory memblock allocation-size 0)
-       (let ((length (sb-vm:fixnumize length)))
-         (setf (mem-aref memblock :long 0) widetag
-               (mem-aref memblock :long 1) length)
-         (let ((array
-                (sb-kernel:%make-lisp-obj (logior (pointer-address memblock)
-                                                  sb-vm:other-pointer-lowtag))))
-           (when initial-element (fill array initial-element))
-           array))))))
+  (let ((memblock (static-alloc allocation-size)))
+    (fill-foreign-memory memblock allocation-size 0)
+    (let ((length (sb-vm:fixnumize length)))
+      (setf (mem-aref memblock :long 0) widetag
+            (mem-aref memblock :long 1) length)
+      (let ((array
+             (sb-kernel:%make-lisp-obj (logior (pointer-address memblock)
+                                               sb-vm:other-pointer-lowtag))))
+        (when initial-element (fill array initial-element))
+        array))))
 
 (declaim (inline %allocation-size))
 (defun %allocation-size (widetag length n-bits)
