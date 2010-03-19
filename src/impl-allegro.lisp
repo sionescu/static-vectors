@@ -74,5 +74,5 @@ within its dynamic extent. The vector is freed upon exit."
      (unwind-protect
           (progn
             (setf ,var (make-static-vector ,length ,@args))
-            ,@body)
+            (locally ,@body))
        (when ,var (free-static-vector ,var)))))
