@@ -30,7 +30,7 @@
 
 (declaim (inline static-alloc))
 (defun static-alloc (size)
-  (let ((ptr (foreign-alloc :char size)))
+  (let ((ptr (foreign-alloc :char :count size)))
     (if (null-pointer-p ptr)
         ;; FIXME: signal proper error condition
         (error 'storage-condition)
