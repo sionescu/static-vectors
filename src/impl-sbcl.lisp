@@ -30,14 +30,11 @@
 
 (declaim (inline static-alloc))
 (defun static-alloc (size)
-  (with-foreign-object (ptr :pointer)
-    (let ((page-size
-            (load-time-value (foreign-funcall "sysconf" :int +sc-pagesize+ :long))))
-      (if (zerop (foreign-funcall "posix_memalign"
-                                  :pointer ptr size-t page-size size-t size :int))
-          (mem-ref ptr :pointer)
-          ;; FIXME: signal proper error condition
-          (error 'storage-condition)))))
+  (let ((ptr (foreign-alloc :char size)))
+    (if (null-pointer-p ptr)
+        ;; FIXME: signal proper error condition
+        (error 'storage-condition)
+        ptr)))
 
 (declaim (inline %allocate-static-vector))
 (defun %allocate-static-vector (allocation-size widetag length initial-element)
