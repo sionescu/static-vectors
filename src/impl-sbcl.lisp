@@ -36,21 +36,8 @@
         (error 'storage-condition)
         ptr)))
 
-(declaim (inline %allocate-static-vector))
-(defun %allocate-static-vector (allocation-size widetag length initial-element)
-  (let ((memblock (static-alloc allocation-size)))
-    (fill-foreign-memory memblock allocation-size 0)
-    (let ((length (sb-vm:fixnumize length)))
-      (setf (mem-aref memblock :long 0) widetag
-            (mem-aref memblock :long 1) length)
-      (let ((array
-             (sb-kernel:%make-lisp-obj (logior (pointer-address memblock)
-                                               sb-vm:other-pointer-lowtag))))
-        (when initial-element (fill array initial-element))
-        array))))
-
 (declaim (inline %allocation-size))
-(defun %allocation-size (widetag length n-bits)
+(defun %allocation-size (length widetag n-bits)
   (flet ((string-widetag-p (widetag)
            (or (= widetag sb-vm:simple-base-string-widetag)
                #+sb-unicode
@@ -64,43 +51,39 @@
            (* 2 sb-vm:n-word-bits)))
        +array-header-size+)))
 
-(defun make-static-vector (length &key (element-type '(unsigned-byte 8))
-                           (initial-element nil))
-  "Create a simple vector of length LENGTH and type ELEMENT-TYPE which will
-not be moved by the garbage collector. The vector might be allocated in
-foreign memory so you must always call FREE-STATIC-VECTOR to free it."
-  (declare (sb-ext:muffle-conditions sb-ext:compiler-note)
-           (optimize speed))
-  (check-type length non-negative-fixnum)
+(declaim (inline %%allocate-static-vector))
+(defun %%allocate-static-vector (allocation-size widetag length)
+  (declare (inline sb-vm:fixnumize))
+  (let ((memblock (static-alloc allocation-size)))
+    (setf (mem-aref memblock :long 0) widetag
+          (mem-aref memblock :long 1) (sb-vm:fixnumize length))
+    (sb-kernel:%make-lisp-obj (logior (pointer-address memblock)
+                                      sb-vm:other-pointer-lowtag))))
+
+(defun %allocate-static-vector (length element-type)
   (multiple-value-bind (widetag n-bits)
       (vector-widetag-and-n-bits element-type)
     (let ((allocation-size
-           (%allocation-size widetag length n-bits)))
-      (%allocate-static-vector allocation-size widetag length initial-element))))
+           (%allocation-size length widetag n-bits)))
+      (%%allocate-static-vector allocation-size widetag length))))
 
-(define-compiler-macro make-static-vector (&whole whole &environment env
-                                           length &key (element-type ''(unsigned-byte 8))
-                                           (initial-element nil))
+(define-compiler-macro %allocate-static-vector
+    (&whole form length element-type &environment env)
   (cond
     ((constantp element-type env)
      (let ((element-type (eval element-type)))
        (multiple-value-bind (widetag n-bits)
            (vector-widetag-and-n-bits element-type)
          (if (constantp length env)
-             (let ((%length% (eval length)))
-               (check-type %length% non-negative-fixnum)
-               `(sb-ext:truly-the
-                 (simple-array ,element-type (,%length%))
-                 (%allocate-static-vector ,(%allocation-size widetag %length% n-bits)
-                                          ,widetag ,%length% ,initial-element)))
-             (with-gensyms (%length%)
-               `(let ((,%length% ,length))
-                  (check-type ,%length% non-negative-fixnum)
-                  (sb-ext:truly-the
-                   (simple-array ,element-type (*))
-                   (%allocate-static-vector (%allocation-size ,widetag ,%length% ,n-bits)
-                                            ,widetag ,%length% ,initial-element))))))))
-    (t whole)))
+             (let* ((length (eval length))
+                    (allocation-size (%allocation-size length widetag n-bits)))
+               `(the* (simple-array ,element-type (,length))
+                      (%%allocate-static-vector ,allocation-size ,widetag ,length)))
+             (once-only (length)
+               (let ((allocation-size `(%allocation-size ,length ,widetag ,n-bits)))
+                 `(the* (simple-array ,element-type (*))
+                        (%%allocate-static-vector ,allocation-size ,widetag ,length))))))))
+    (t form)))
 
 (declaim (inline static-vector-address))
 (defun static-vector-address (vector)

@@ -18,12 +18,9 @@
   dst-ptr)
 
 (declaim (inline %allocate-static-vector))
-(defun %allocate-static-vector (length element-type initial-element)
-  (let ((array
-         (make-array length :allocation :static
-                     :element-type element-type)))
-    (when initial-element (fill array initial-element))
-    array))
+(defun %allocate-static-vector (length element-type)
+  (make-array length :element-type element-type
+              :allocation :static))
 
 (defun make-static-vector (length &key (element-type '(unsigned-byte 8))
                            (initial-element nil))
