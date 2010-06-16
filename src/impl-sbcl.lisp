@@ -1,6 +1,6 @@
-;;;; -*- Mode: Lisp; Syntax: ANSI-Common-Lisp; indent-tabs-mode: nil -*-
+;;;; -*- Mode: Lisp; indent-tabs-mode: nil -*-
 ;;;
-;;; --- SBCL implementation.
+;;; --- SBCL implementation
 ;;;
 
 (in-package :static-vectors)

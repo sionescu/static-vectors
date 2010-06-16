@@ -1,6 +1,6 @@
-;;;; -*- Mode: Lisp; Syntax: ANSI-Common-Lisp; indent-tabs-mode: nil -*-
+;;;; -*- Mode: Lisp; indent-tabs-mode: nil -*-
 ;;;
-;;; --- Allegro CL implementation.
+;;; --- Allegro CL implementation
 ;;;
 
 (in-package :static-vectors)

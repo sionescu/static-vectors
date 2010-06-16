@@ -1,6 +1,6 @@
-;;;; -*- Mode: Lisp; Syntax: ANSI-Common-Lisp; indent-tabs-mode: nil -*-
+;;;; -*- Mode: Lisp; indent-tabs-mode: nil -*-
 ;;;
-;;; --- ECL implementation.
+;;; --- ECL implementation
 ;;;
 
 (in-package :static-vectors)

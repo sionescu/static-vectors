@@ -1,6 +1,6 @@
-;;;; -*- Mode: Lisp; Syntax: ANSI-Common-Lisp; indent-tabs-mode: nil -*-
+;;;; -*- Mode: Lisp; indent-tabs-mode: nil -*-
 ;;;
-;;; --- Package definition.
+;;; --- Package definition
 ;;;
 
 (in-package :common-lisp-user)

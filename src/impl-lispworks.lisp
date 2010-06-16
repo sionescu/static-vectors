@@ -1,6 +1,6 @@
-;;;; -*- Mode: Lisp; Syntax: ANSI-Common-Lisp; indent-tabs-mode: nil -*-
+;;;; -*- Mode: Lisp; indent-tabs-mode: nil -*-
 ;;;
-;;; --- Lispworks CL implementation.
+;;; --- Lispworks CL implementation
 ;;;
 
 (in-package :static-vectors)
