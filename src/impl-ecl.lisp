@@ -21,31 +21,6 @@
 (defun %allocate-static-vector (length element-type)
   (make-array length :element-type element-type))
 
-(defun make-static-vector (length &key (element-type '(unsigned-byte 8))
-                           (initial-element nil))
-  "Create a simple vector of length LENGTH and type ELEMENT-TYPE which will
-not be moved by the garbage collector. The vector might be allocated in
-foreign memory so you must always call FREE-STATIC-VECTOR to free it."
-  (declare (optimize speed))
-  (check-type length non-negative-fixnum)
-  (%allocate-static-vector length element-type initial-element))
-
-(define-compiler-macro make-static-vector (&whole whole &environment env
-                                           length &key (element-type ''(unsigned-byte 8))
-                                           (initial-element nil))
-  (cond
-    ((constantp element-type env)
-     (let ((element-type (eval element-type)))
-       (if (constantp length env)
-           (let ((%length% (eval length)))
-             (check-type %length% non-negative-fixnum)
-             `(%allocate-static-vector ,%length% ',element-type ,initial-element))
-           (with-gensyms (%length%)
-             `(let ((,%length% ,length))
-                (check-type ,%length% non-negative-fixnum)
-                (%allocate-static-vector ,%length% ',element-type ,initial-element))))))
-    (t whole)))
-
 (declaim (inline static-vector-address))
 ;;; ECL, built with the Boehm GC never moves allocated data, so this is easy
 (defun static-vector-address (vector)
