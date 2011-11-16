@@ -11,11 +11,12 @@
   :licence "MIT"
   :depends-on (:alexandria :cffi)
   :components ((:file "pkgdcl")
-               (:file "initialize" :depends-on ("pkgdcl"))
+               (:file "constantp" :depends-on ("pkgdcl"))
+               (:file "initialize" :depends-on ("pkgdcl" "constantp"))
                #+(or allegro cmu ecl sbcl)
                (cffi-grovel:grovel-file "ffi-types" :depends-on ("pkgdcl"))
                (:file "impl"
-                      :depends-on ("pkgdcl" "initialize"
+                      :depends-on ("pkgdcl" "constantp" "initialize"
                                    #+(or allegro cmu ecl sbcl) "ffi-types")
                       :pathname #+allegro   "impl-allegro"
                                 #+ccl       "impl-clozure"
@@ -23,5 +24,5 @@
                                 #+ecl       "impl-ecl"
                                 #+lispworks "impl-lispworks"
                                 #+sbcl      "impl-sbcl")
-               (:file "constructor" :depends-on ("pkgdcl" "initialize" "impl"))
+               (:file "constructor" :depends-on ("pkgdcl" "constantp" "initialize" "impl"))
                (:file "cffi-type-translator" :depends-on ("pkgdcl" "impl"))))

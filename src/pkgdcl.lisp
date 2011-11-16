@@ -7,6 +7,7 @@
 
 (defpackage :static-vectors
   (:use #:common-lisp :alexandria :cffi)
+  (:shadow #:constantp)
   (:export
    ;; Constructors and destructors
    #:make-static-vector

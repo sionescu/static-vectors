@@ -29,10 +29,10 @@ foreign memory so you must always call FREE-STATIC-VECTOR to free it."
   (check-initialization-arguments initial-element-p initial-contents-p)
   (cond
     ((constantp element-type env)
-     (let ((element-type (eval element-type)))
+     (let ((element-type (eval-constant element-type env)))
        (let ((allocation-form
               (if (constantp length env)
-                  (let ((length (eval length)))
+                  (let ((length (eval-constant length env)))
                     (check-type length non-negative-fixnum)
                     `(%allocate-static-vector ,length ',element-type))
                   (once-only (length)

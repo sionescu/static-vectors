@@ -71,11 +71,11 @@
     (&whole form length element-type &environment env)
   (cond
     ((constantp element-type env)
-     (let ((element-type (eval element-type)))
+     (let ((element-type (eval-constant element-type env)))
        (multiple-value-bind (widetag n-bits)
            (vector-widetag-and-n-bits element-type)
          (if (constantp length env)
-             (let* ((length (eval length))
+             (let* ((length (eval-constant length env))
                     (allocation-size (%allocation-size length widetag n-bits)))
                `(the* (simple-array ,element-type (,length))
                       (%%allocate-static-vector ,allocation-size ,widetag ,length)))
