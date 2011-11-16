@@ -7,7 +7,7 @@
 (asdf:defsystem :static-vectors
   :description "Create vectors allocated in static memory."
   :author "Stelian Ionescu <sionescu@cddr.org>"
-  :version "0.0.1"
+  :version "1.0"
   :licence "MIT"
   :depends-on (:alexandria :cffi)
   :components ((:file "pkgdcl")
