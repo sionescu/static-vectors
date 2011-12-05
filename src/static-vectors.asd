@@ -1,14 +1,11 @@
 ;;;; -*- Mode: Lisp; indent-tabs-mode: nil -*-
 
-#+(or allegro cmu ecl sbcl)
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (asdf:oos 'asdf:load-op :cffi-grovel))
-
-(asdf:defsystem :static-vectors
+(defsystem :static-vectors
   :description "Create vectors allocated in static memory."
   :author "Stelian Ionescu <sionescu@cddr.org>"
   :version "1.0"
   :licence "MIT"
+  :defsystem-depends-on (#+(or allegro cmu ecl sbcl) :cffi-grovel)
   :depends-on (:alexandria :cffi)
   :components ((:file "pkgdcl")
                (:file "constantp" :depends-on ("pkgdcl"))
