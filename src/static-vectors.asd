@@ -3,7 +3,7 @@
 (defsystem :static-vectors
   :description "Create vectors allocated in static memory."
   :author "Stelian Ionescu <sionescu@cddr.org>"
-  :version "1.0"
+  :version "1.1"
   :licence "MIT"
   :defsystem-depends-on (#+(or allegro cmu ecl sbcl) :cffi-grovel)
   :depends-on (:alexandria :cffi)
