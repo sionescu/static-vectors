@@ -11,7 +11,7 @@
                (:file "constantp" :depends-on ("pkgdcl"))
                (:file "initialize" :depends-on ("pkgdcl" "constantp"))
                #+(or allegro cmu ecl sbcl)
-               (cffi-grovel:grovel-file "ffi-types" :depends-on ("pkgdcl"))
+               (:cffi-grovel-file "ffi-types" :depends-on ("pkgdcl"))
                (:file "impl"
                       :depends-on ("pkgdcl" "constantp" "initialize"
                                    #+(or allegro cmu ecl sbcl) "ffi-types")
