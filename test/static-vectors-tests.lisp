@@ -81,9 +81,12 @@
       (is (not (mismatch v '(1 2 3 4 5)))))))
 
 (test make-static-vector.initial-element-and-contents.compiler-macro.error
-  (signals simple-error
-    (compile nil '(lambda ()
-                   (declare (inline make-static-vector)
-                            (optimize (speed 3) (debug 1)))
-                   (make-static-vector 5 :initial-element 3
-                                       :initial-contents '(1 2 3 4 5))))))
+  (multiple-value-bind (function warnp failp)
+      (ignore-errors
+       (compile nil '(lambda ()
+                      (declare (inline make-static-vector)
+                       (optimize (speed 3) (debug 1)))
+                      (make-static-vector 5 :initial-element 3
+                                            :initial-contents '(1 2 3 4 5)))))
+    (declare (ignore function warnp))
+    (is-false (and function (not failp)))))
