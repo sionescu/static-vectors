@@ -55,8 +55,8 @@
 (defun %%allocate-static-vector (allocation-size widetag length)
   (declare (inline sb-vm:fixnumize))
   (let ((memblock (static-alloc allocation-size)))
-    (setf (mem-aref memblock :long 0) widetag
-          (mem-aref memblock :long 1) (sb-vm:fixnumize length))
+    (setf (sb-sys:sap-ref-word memblock                  0) widetag
+          (sb-sys:sap-ref-word memblock sb-vm:n-word-bytes) (sb-vm:fixnumize length))
     (sb-kernel:%make-lisp-obj (logior (pointer-address memblock)
                                       sb-vm:other-pointer-lowtag))))
 
