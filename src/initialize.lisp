@@ -67,16 +67,12 @@ but requested vector length is ~A."
        (replace vector initial-contents))))
   vector)
 
-(defun symbol-macro-value (symbol env &optional default)
-  (multiple-value-bind (expansion macro-p) (macroexpand symbol env)
-    (if macro-p (eval expansion) default)))
-
 (define-compiler-macro %initialize-vector
     (&whole form &environment env
      vector initial-element initial-element-p
      initial-contents initial-contents-p)
-  (let ((length (symbol-macro-value '$length$ env))
-        (element-type (symbol-macro-value '$element-type$ env)))
+  (let ((length (macroexpand '$length$ env))
+        (element-type (macroexpand '$element-type$ env)))
     (cond
       (initial-element-p
        (once-only (vector)
