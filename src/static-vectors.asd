@@ -3,8 +3,11 @@
 (defsystem :static-vectors
   :description "Create vectors allocated in static memory."
   :author "Stelian Ionescu <sionescu@cddr.org>"
-  :version "1.2"
   :licence "MIT"
+  :version #.(with-open-file (f (merge-pathnames "../version.lisp-expr"
+                                                 (or *compile-file-pathname*
+                                                     *load-truename*)))
+               (read f))
   :defsystem-depends-on (#+(or allegro cmu ecl sbcl) :cffi-grovel)
   :depends-on (:alexandria :cffi)
   :components ((:file "pkgdcl")
