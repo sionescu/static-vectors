@@ -27,22 +27,27 @@ foreign memory so you must always call FREE-STATIC-VECTOR to free it."
                                            (initial-element nil initial-element-p)
                                            (initial-contents nil initial-contents-p))
   (check-initialization-arguments initial-element-p initial-contents-p)
-  (cond
-    ((constantp element-type env)
-     (let ((element-type (eval-constant element-type env)))
-       (let ((allocation-form
-              (if (constantp length env)
-                  (let ((length (eval-constant length env)))
+  (macrolet
+      ((eval-constants-rebinding ((&rest vars) &body body)
+         `(let ,(loop :for v :in vars :collect
+                      `(,v (if (constantp ,v env) (eval-constant ,v env) ,v)))
+            ,@body)))
+    (eval-constants-rebinding (length element-type initial-element initial-contents)
+      (cond
+        ((constantp element-type env)
+         (let ((allocation-form
+                 (cond
+                   ((constantp length env)
                     (check-type length non-negative-fixnum)
                     `(%allocate-static-vector ,length ',element-type))
-                  (once-only (length)
-                    `(progn
-                       (check-type ,length non-negative-fixnum)
-                       (%allocate-static-vector ,length ',element-type))))))
-         (with-gensyms (vector)
-           `(let ((,vector ,allocation-form))
-              (symbol-macrolet (($length$ ,length)
-                                ($element-type$ ',element-type))
-                (%initialize-vector ,vector ,initial-element ,initial-element-p
-                                    ,initial-contents ,initial-contents-p)))))))
-    (t whole)))
+                   (t (once-only (length)
+                        `(progn
+                           (check-type ,length non-negative-fixnum)
+                           (%allocate-static-vector ,length ',element-type)))))))
+           (with-gensyms (vector)
+             `(let ((,vector ,allocation-form))
+                (symbol-macrolet (($length$ ,length)
+                                  ($element-type$ ',element-type))
+                  (%initialize-vector ,vector ,initial-element ,initial-element-p
+                                      ,initial-contents ,initial-contents-p))))))
+        (t whole)))))
