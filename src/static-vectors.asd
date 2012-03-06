@@ -25,4 +25,7 @@
                                 #+lispworks "impl-lispworks"
                                 #+sbcl      "impl-sbcl")
                (:file "constructor" :depends-on ("pkgdcl" "constantp" "initialize" "impl"))
-               (:file "cffi-type-translator" :depends-on ("pkgdcl" "impl"))))
+               (:file "cffi-type-translator" :depends-on ("pkgdcl" "impl")))
+  :in-order-to ((asdf:test-op (asdf:load-op :static-vectors-test)))
+  :perform (asdf:test-op :after (op c)
+             (asdf:oos 'asdf:test-op :static-vectors-test)))
