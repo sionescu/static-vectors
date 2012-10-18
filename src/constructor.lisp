@@ -18,9 +18,9 @@ foreign memory so you must always call FREE-STATIC-VECTOR to free it."
   (check-arguments length element-type initial-element initial-element-p
                    initial-contents initial-contents-p)
   (let ((vector
-         (%allocate-static-vector length element-type)))
-    (%initialize-vector vector initial-element initial-element-p
-                        initial-contents initial-contents-p)))
+          (%allocate-static-vector length element-type)))
+    (%initialize-vector vector length element-type initial-element
+                        initial-element-p initial-contents initial-contents-p)))
 
 (define-compiler-macro make-static-vector (&whole whole &environment env
                                            length &key (element-type ''(unsigned-byte 8))
@@ -32,7 +32,7 @@ foreign memory so you must always call FREE-STATIC-VECTOR to free it."
          `(let ,(loop :for v :in vars :collect
                       `(,v (if (constantp ,v env) (eval-constant ,v env) ,v)))
             ,@body)))
-    (eval-constants-rebinding (length initial-element initial-contents)
+    (eval-constants-rebinding (length initial-element)
       (cond
         ((constantp element-type env)
          (let ((allocation-form
@@ -46,8 +46,6 @@ foreign memory so you must always call FREE-STATIC-VECTOR to free it."
                            (%allocate-static-vector ,length ,element-type)))))))
            (with-gensyms (vector)
              `(let ((,vector ,allocation-form))
-                (symbol-macrolet (($length$ ,length)
-                                  ($element-type$ ,element-type))
-                  (%initialize-vector ,vector ,initial-element ,initial-element-p
-                                      ,initial-contents ,initial-contents-p))))))
+                (%initialize-vector ,vector ,length ,element-type ,initial-element ,initial-element-p
+                                    ,initial-contents ,initial-contents-p)))))
         (t whole)))))
