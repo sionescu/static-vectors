@@ -56,8 +56,9 @@ but requested vector length is ~A."
     ,type ,form))
 
 (declaim (inline %initialize-vector))
-(defun %initialize-vector (vector initial-element initial-element-p
+(defun %initialize-vector (vector length element-type initial-element initial-element-p
                            initial-contents initial-contents-p)
+  (declare (ignore length element-type))
   (cond
     (initial-element-p
      (free-vector-if-error (vector)
@@ -69,27 +70,25 @@ but requested vector length is ~A."
 
 (define-compiler-macro %initialize-vector
     (&whole form &environment env
-     vector initial-element initial-element-p
+     vector length element-type initial-element initial-element-p
      initial-contents initial-contents-p)
-  (let ((length (macroexpand '$length$ env))
-        (element-type (macroexpand '$element-type$ env)))
-    (cond
-      (initial-element-p
-       (once-only (vector)
-         `(free-vector-if-error (,vector)
-            ,@(if (and (constantp element-type env)
-                       (constantp initial-element env))
-                  (check-initial-element element-type initial-element)
-                  `((check-initial-element ,element-type ,initial-element)))
-            (fill ,vector ,initial-element)
-            ,vector)))
-      (initial-contents-p
-       (once-only (vector)
-         `(free-vector-if-error (,vector)
-            ,@(if (and (constantp length env)
-                       (constantp initial-contents env))
-                  (check-initial-contents length initial-contents)
-                  `((check-initial-contents ,length ,initial-contents)))
-            (replace ,vector ,initial-contents)
-            ,vector)))
-      (t form))))
+  (cond
+    (initial-element-p
+     (once-only (vector)
+       `(free-vector-if-error (,vector)
+          ,@(if (and (constantp element-type env)
+                     (constantp initial-element env))
+                (check-initial-element (eval-constant element-type env) initial-element)
+                `((check-initial-element ,element-type ,initial-element)))
+          (fill ,vector ,initial-element)
+          ,vector)))
+    (initial-contents-p
+     (once-only (vector)
+       `(free-vector-if-error (,vector)
+          ,@(if (and (constantp length env)
+                     (constantp initial-contents env))
+                (check-initial-contents length (eval-constant initial-contents env))
+                `((check-initial-contents ,length ,initial-contents)))
+          (replace ,vector ,initial-contents)
+          ,vector)))
+    (t form)))
