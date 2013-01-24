@@ -95,5 +95,5 @@
                        (optimize (speed 3) (debug 1)))
                       (make-static-vector 5 :initial-element 3
                                             :initial-contents '(1 2 3 4 5)))))
-    (declare (ignore function warnp))
+    (declare (ignore warnp))
     (is-false (and function (not failp)))))
