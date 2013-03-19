@@ -58,6 +58,8 @@ but requested vector length is ~A."
 (declaim (inline %initialize-vector))
 (defun %initialize-vector (vector length element-type initial-element initial-element-p
                            initial-contents initial-contents-p)
+  ;; These two are kept because the compiler-macro uses them to check for the validity
+  ;; of the INITIAL-ELEMENT and INITIAL-CONTENTS
   (declare (ignore length element-type))
   (cond
     (initial-element-p
