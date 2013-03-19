@@ -43,7 +43,7 @@ but requested vector length is ~A."
   #+(or ecl lispworks) t
   #-(or ecl lispworks) nil)
 
-(defmacro free-vector-if-error ((vector) &body body)
+(defmacro free-vector-on-error ((vector) &body body)
   (if +static-vectors-are-garbage-collected+
       `(progn ,@body)
       `(unwind-protect-case ()
@@ -63,10 +63,10 @@ but requested vector length is ~A."
   (declare (ignore length element-type))
   (cond
     (initial-element-p
-     (free-vector-if-error (vector)
+     (free-vector-on-error (vector)
        (fill vector initial-element)))
     (initial-contents-p
-     (free-vector-if-error (vector)
+     (free-vector-on-error (vector)
        (replace vector initial-contents))))
   vector)
 
@@ -77,7 +77,7 @@ but requested vector length is ~A."
   (cond
     (initial-element-p
      (once-only (vector)
-       `(free-vector-if-error (,vector)
+       `(free-vector-on-error (,vector)
           ,@(if (and (constantp element-type env)
                      (constantp initial-element env))
                 (check-initial-element (eval-constant element-type env) initial-element)
@@ -86,7 +86,7 @@ but requested vector length is ~A."
           ,vector)))
     (initial-contents-p
      (once-only (vector)
-       `(free-vector-if-error (,vector)
+       `(free-vector-on-error (,vector)
           ,@(if (and (constantp length env)
                      (constantp initial-contents env))
                 (check-initial-contents length (eval-constant initial-contents env))
