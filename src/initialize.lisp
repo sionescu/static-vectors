@@ -93,4 +93,4 @@ but requested vector length is ~A."
                 `((check-initial-contents ,length ,initial-contents)))
           (replace ,vector ,initial-contents)
           ,vector)))
-    (t form)))
+    (t vector)))
