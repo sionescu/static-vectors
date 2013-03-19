@@ -71,7 +71,7 @@ but requested vector length is ~A."
   vector)
 
 (define-compiler-macro %initialize-vector
-    (&whole form &environment env
+    (&environment env
      vector length element-type initial-element initial-element-p
      initial-contents initial-contents-p)
   (cond
