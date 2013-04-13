@@ -24,15 +24,13 @@
        :compile-at :definition-time)
   (finishes
     (compile nil '(lambda ()
-                   (declare (inline make-static-vector)
-                            (optimize (speed 3) (debug 1)))
+                   (declare (optimize (speed 3) (debug 1)))
                    (make-static-vector 5)))))
 
 (test (make-static-vector.plain.inline
        :depends-on make-static-vector.plain.compiler-macro.noerror)
   (locally
-      (declare (inline make-static-vector)
-               (optimize (speed 3) (debug 1)))
+      (declare (optimize (speed 3) (debug 1)))
     (let ((v (make-static-vector 5)))
       (is (equal 5 (length v))))))
 
@@ -48,15 +46,13 @@
        :compile-at :definition-time)
   (finishes
     (compile nil '(lambda ()
-                   (declare (inline make-static-vector)
-                            (optimize (speed 3) (debug 1)))
+                   (declare (optimize (speed 3) (debug 1)))
                    (make-static-vector 5 :initial-element 3)))))
 
 (test (make-static-vector.initial-element.inline
        :depends-on make-static-vector.initial-element.compiler-macro.noerror)
   (locally
-      (declare (inline make-static-vector)
-               (optimize (speed 3) (debug 1)))
+      (declare (optimize (speed 3) (debug 1)))
     (let ((v (make-static-vector 5 :initial-element 3)))
       (is (equal 5 (length v)))
       (is (not (find 3 v :test-not #'=))))))
@@ -73,15 +69,13 @@
        :compile-at :definition-time)
   (finishes
     (compile nil '(lambda ()
-                   (declare (inline make-static-vector)
-                            (optimize (speed 3) (debug 1)))
+                   (declare (optimize (speed 3) (debug 1)))
                    (make-static-vector 5 :initial-contents '(1 2 3 4 5))))))
 
 (test (make-static-vector.initial-contents.inline
        :depends-on make-static-vector.initial-contents.compiler-macro.noerror)
   (locally
-      (declare (inline make-static-vector)
-               (optimize (speed 3) (debug 1)))
+      (declare (optimize (speed 3) (debug 1)))
     (let ((v (make-static-vector 5 :initial-contents '(1 2 3 4 5))))
       (is (equal 5 (length v)))
       (is (not (mismatch v '(1 2 3 4 5)))))))
@@ -91,8 +85,7 @@
   (multiple-value-bind (function warnp failp)
       (ignore-errors
        (compile nil '(lambda ()
-                      (declare (inline make-static-vector)
-                       (optimize (speed 3) (debug 1)))
+                      (declare (optimize (speed 3) (debug 1)))
                       (make-static-vector 5 :initial-element 3
                                             :initial-contents '(1 2 3 4 5)))))
     (declare (ignore warnp))
