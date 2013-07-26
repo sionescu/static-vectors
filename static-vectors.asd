@@ -3,7 +3,7 @@
 (unless (or #+asdf3 (asdf/driver:version<= "2.32" (asdf-version)))
   (error "You need ASDF >= 2.32 to load this system correctly."))
 
-(asdf:defsystem :static-vectors
+(defsystem :static-vectors
   :description "Create vectors allocated in static memory."
   :author "Stelian Ionescu <sionescu@cddr.org>"
   :licence "MIT"
@@ -27,13 +27,12 @@
                (:file "constructor" :depends-on ("pkgdcl" "constantp" "initialize" "impl"))
                (:file "cffi-type-translator" :depends-on ("pkgdcl" "impl"))))
 
-(asdf:defsystem :static-vectors/test
+(defsystem :static-vectors/test
   :depends-on (:static-vectors :fiveam)
   :version (:read-file-form "version.sexp")
   :pathname "tests/"
   :components ((:file "static-vectors-tests")))
 
-(defmethod asdf:perform ((o asdf:test-op)
-                         (c (eql (asdf:find-system :static-vectors))))
+(defmethod asdf:perform ((o asdf:test-op) (c (eql (asdf:find-system :static-vectors))))
   (asdf:load-system :static-vectors/test :force ':static-vectors/test)
   (uiop:symbol-call :5am :run! :static-vectors))
