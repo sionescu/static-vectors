@@ -1,7 +1,7 @@
 ;;;; -*- Mode: Lisp; indent-tabs-mode: nil -*-
 
-(unless (or #+asdf3 (asdf/driver:version<= "2.29" (asdf-version)))
-  (error "You need ASDF >= 2.29 to load this system correctly."))
+(unless (or #+asdf3 (asdf/driver:version<= "2.32" (asdf-version)))
+  (error "You need ASDF >= 2.32 to load this system correctly."))
 
 (asdf:defsystem :static-vectors
   :description "Create vectors allocated in static memory."
@@ -14,11 +14,10 @@
   :components ((:file "pkgdcl")
                (:file "constantp" :depends-on ("pkgdcl"))
                (:file "initialize" :depends-on ("pkgdcl" "constantp"))
-               #+(or allegro cmu ecl sbcl)
-               (:cffi-grovel-file "ffi-types" :depends-on ("pkgdcl"))
+               (:cffi-grovel-file "ffi-types" :depends-on ("pkgdcl")
+                :if-feature (:or :allegro :cmu :ecl :sbcl))
                (:file "impl"
-                      :depends-on ("pkgdcl" "constantp" "initialize"
-                                   #+(or allegro cmu ecl sbcl) "ffi-types")
+                      :depends-on ("pkgdcl" "constantp" "initialize" "ffi-types")
                       :pathname #+allegro   "impl-allegro"
                                 #+ccl       "impl-clozure"
                                 #+cmu       "impl-cmucl"
@@ -36,5 +35,5 @@
 
 (defmethod asdf:perform ((o asdf:test-op)
                          (c (eql (asdf:find-system :static-vectors))))
-  (asdf:load-system :static-vectors/test)
-  (asdf/package:symbol-call :5am :run! :static-vectors))
+  (asdf:load-system :static-vectors/test :force ':static-vectors/test)
+  (uiop:symbol-call :5am :run! :static-vectors))
