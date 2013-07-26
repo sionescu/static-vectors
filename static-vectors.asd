@@ -7,7 +7,7 @@
   :description "Create vectors allocated in static memory."
   :author "Stelian Ionescu <sionescu@cddr.org>"
   :licence "MIT"
-  :version (:read-file-form "version.lisp-expr")
+  :version (:read-file-form "version.sexp")
   :defsystem-depends-on (#+(or allegro cmu ecl sbcl) :cffi-grovel)
   :depends-on (:alexandria :cffi)
   :pathname "src/"
@@ -29,7 +29,7 @@
 
 (asdf:defsystem :static-vectors/test
   :depends-on (:static-vectors :fiveam)
-  :version (:read-file-form "version.lisp-expr")
+  :version (:read-file-form "version.sexp")
   :pathname "tests/"
   :components ((:file "static-vectors-tests")))
 
