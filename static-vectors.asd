@@ -14,10 +14,11 @@
   :components ((:file "pkgdcl")
                (:file "constantp" :depends-on ("pkgdcl"))
                (:file "initialize" :depends-on ("pkgdcl" "constantp"))
-               (:cffi-grovel-file "ffi-types" :depends-on ("pkgdcl")
-                :if-feature (:or :allegro :cmu :ecl :sbcl))
+               #+(or allegro cmu ecl sbcl)
+               (:cffi-grovel-file "ffi-types" :depends-on ("pkgdcl"))
                (:file "impl"
-                      :depends-on ("pkgdcl" "constantp" "initialize" "ffi-types")
+                      :depends-on ("pkgdcl" "constantp" "initialize"
+                                   #+(or allegro cmu ecl sbcl) "ffi-types")
                       :pathname #+allegro   "impl-allegro"
                                 #+ccl       "impl-clozure"
                                 #+cmu       "impl-cmucl"
@@ -34,5 +35,5 @@
   :components ((:file "static-vectors-tests")))
 
 (defmethod perform ((o test-op) (c (eql (find-system :static-vectors))))
-  (load-system :static-vectors/test :force ':static-vectors/test)
+  (load-system :static-vectors/test :force '(:static-vectors/test))
   (uiop:symbol-call :5am :run! :static-vectors))
