@@ -1,7 +1,7 @@
 ;;;; -*- Mode: Lisp; indent-tabs-mode: nil -*-
 
-(unless (or #+asdf3 (asdf/driver:version<= "2.32" (asdf-version)))
-  (error "You need ASDF >= 2.32 to load this system correctly."))
+#.(unless (or #+asdf3 (asdf/driver:version<= "2.32" (asdf-version)))
+    (error "You need ASDF >= 2.32 to load this system correctly."))
 
 (defsystem :static-vectors
   :description "Create vectors allocated in static memory."
