@@ -33,6 +33,6 @@
   :pathname "tests/"
   :components ((:file "static-vectors-tests")))
 
-(defmethod asdf:perform ((o asdf:test-op) (c (eql (asdf:find-system :static-vectors))))
-  (asdf:load-system :static-vectors/test :force ':static-vectors/test)
+(defmethod perform ((o test-op) (c (eql (find-system :static-vectors))))
+  (load-system :static-vectors/test :force ':static-vectors/test)
   (uiop:symbol-call :5am :run! :static-vectors))
