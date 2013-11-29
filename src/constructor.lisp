@@ -44,6 +44,7 @@ foreign memory so you must always call FREE-STATIC-VECTOR to free it."
                        (cmfuncall %allocate-static-vector ,len-var ,element-type))))))
            `(let* ((,len-var ,len-val)
                    (,vector ,allocation-form))
+              (declare (ignorable ,len-var))
               (cmfuncall %initialize-vector ,vector ,len-var ,element-type
                          ,initial-element ,initial-element-p
                          ,initial-contents ,initial-contents-p))))
