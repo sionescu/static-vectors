@@ -28,25 +28,23 @@ foreign memory so you must always call FREE-STATIC-VECTOR to free it."
                                            (initial-element nil initial-element-p)
                                            (initial-contents nil initial-contents-p))
   (check-initialization-arguments initial-element-p initial-contents-p)
-  (macrolet
-      ((eval-constants-rebinding ((&rest vars) &body body)
-         `(let ,(loop :for v :in vars :collect
-                      `(,v (if (constantp ,v env) (eval-constant ,v env) ,v)))
-            ,@body)))
-    (eval-constants-rebinding (length initial-element)
+  (with-gensyms (len-var vector)
+    (let ((len-val length))
       (cond
         ((constantp element-type env)
          (let ((allocation-form
                  (cond
                    ((constantp length env)
-                    (check-type length non-negative-fixnum)
-                    `(%allocate-static-vector ,length ,element-type))
-                   (t (once-only (length)
-                        `(progn
-                           (check-type ,length non-negative-fixnum)
-                           (%allocate-static-vector ,length ,element-type)))))))
-           (with-gensyms (vector)
-             `(let ((,vector ,allocation-form))
-                (%initialize-vector ,vector ,length ,element-type ,initial-element ,initial-element-p
-                                    ,initial-contents ,initial-contents-p)))))
+                    (setf len-val (eval-constant length env))
+                    (check-type len-val non-negative-fixnum)
+                    `(cmfuncall %allocate-static-vector ,len-val ,element-type))
+                   (t
+                    `(progn
+                       (check-type ,len-var non-negative-fixnum)
+                       (cmfuncall %allocate-static-vector ,len-var ,element-type))))))
+           `(let* ((,len-var ,len-val)
+                   (,vector ,allocation-form))
+              (cmfuncall %initialize-vector ,vector ,len-var ,element-type
+                         ,initial-element ,initial-element-p
+                         ,initial-contents ,initial-contents-p))))
         (t form)))))
