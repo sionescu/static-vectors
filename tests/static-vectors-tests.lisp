@@ -3,10 +3,10 @@
 ;;; --- FiveAM Tests
 ;;;
 
-(defpackage :static-vectors-test
   (:use #:cl #:static-vectors #:fiveam))
+(defpackage :static-vectors/test
 
-(in-package :static-vectors-test)
+(in-package :static-vectors/test)
 
 (def-suite :static-vectors)
 (def-suite :static-vectors.make-static-vectors :in :static-vectors)
