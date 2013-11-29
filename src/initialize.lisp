@@ -77,7 +77,8 @@ but requested vector length is ~A."
      initial-element initial-element-p
      initial-contents initial-contents-p)
   (cond
-    (initial-element-p
+    ((and (constantp initial-element-p env)
+          (eval-constant initial-element-p env))
      (once-only (vector)
        `(free-vector-on-error (,vector)
           ,@(if (and (constantp element-type env)
@@ -86,7 +87,8 @@ but requested vector length is ~A."
                 `((check-initial-element ,element-type ,initial-element)))
           (fill ,vector ,initial-element)
           ,vector)))
-    (initial-contents-p
+    ((and (constantp initial-contents-p env)
+          (eval-constant initial-contents-p env))
      (once-only (vector)
        `(free-vector-on-error (,vector)
           ,@(if (and (constantp length env)
