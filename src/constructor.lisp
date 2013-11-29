@@ -19,10 +19,11 @@ foreign memory so you must always call FREE-STATIC-VECTOR to free it."
                    initial-contents initial-contents-p)
   (let ((vector
           (%allocate-static-vector length element-type)))
-    (%initialize-vector vector length element-type initial-element
-                        initial-element-p initial-contents initial-contents-p)))
+    (%initialize-vector vector length element-type
+                        initial-element initial-element-p
+                        initial-contents initial-contents-p)))
 
-(define-compiler-macro make-static-vector (&whole whole &environment env
+(define-compiler-macro make-static-vector (&whole form &environment env
                                            length &key (element-type ''(unsigned-byte 8))
                                            (initial-element nil initial-element-p)
                                            (initial-contents nil initial-contents-p))
@@ -48,4 +49,4 @@ foreign memory so you must always call FREE-STATIC-VECTOR to free it."
              `(let ((,vector ,allocation-form))
                 (%initialize-vector ,vector ,length ,element-type ,initial-element ,initial-element-p
                                     ,initial-contents ,initial-contents-p)))))
-        (t whole)))))
+        (t form)))))

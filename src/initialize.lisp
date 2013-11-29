@@ -72,8 +72,9 @@ but requested vector length is ~A."
   vector)
 
 (define-compiler-macro %initialize-vector
-    (&environment env
-     vector length element-type initial-element initial-element-p
+    (&whole form &environment env
+     vector length element-type
+     initial-element initial-element-p
      initial-contents initial-contents-p)
   (cond
     (initial-element-p
@@ -94,4 +95,4 @@ but requested vector length is ~A."
                 `((check-initial-contents ,length ,initial-contents)))
           (replace ,vector ,initial-contents)
           ,vector)))
-    (t vector)))
+    (t form)))
