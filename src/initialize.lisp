@@ -39,9 +39,10 @@ but requested vector length is ~A."
   (when initial-contents-p
     (check-initial-contents length initial-contents)))
 
-(defconstant +static-vectors-are-garbage-collected+
-  #+(or ecl lispworks) t
-  #-(or ecl lispworks) nil)
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defconstant +static-vectors-are-garbage-collected+
+    #+(or ecl lispworks) t
+    #-(or ecl lispworks) nil))
 
 (defmacro free-vector-on-error ((vector) &body body)
   (if +static-vectors-are-garbage-collected+
