@@ -19,3 +19,10 @@
   (sb-int:constant-form-value form env)
   #-(or clozure sbcl)
   (eval form))
+
+(defmacro cmfuncall (op &rest args &environment env)
+  (let ((cmfun (compiler-macro-function op))
+        (form (cons op args)))
+    (if cmfun
+        (funcall cmfun form env)
+        form)))
