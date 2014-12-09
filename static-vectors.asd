@@ -14,11 +14,11 @@
   :components ((:file "pkgdcl")
                (:file "constantp" :depends-on ("pkgdcl"))
                (:file "initialize" :depends-on ("pkgdcl" "constantp"))
-               #+(or allegro cmu ecl sbcl)
+               #+(or allegro cmu ecl)
                (:cffi-grovel-file "ffi-types" :depends-on ("pkgdcl"))
                (:file "impl"
                       :depends-on ("pkgdcl" "constantp" "initialize"
-                                   #+(or allegro cmu ecl sbcl) "ffi-types")
+                                   #+(or allegro cmu ecl) "ffi-types")
                       :pathname #+allegro   "impl-allegro"
                                 #+ccl       "impl-clozure"
                                 #+cmu       "impl-cmucl"
