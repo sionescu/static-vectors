@@ -24,7 +24,9 @@
                                 #+cmu       "impl-cmucl"
                                 #+ecl       "impl-ecl"
                                 #+lispworks "impl-lispworks"
-                                #+sbcl      "impl-sbcl")
+                                #+sbcl      "impl-sbcl"
+                                #-(or allegro ccl cmu ecl lispworks sbcl)
+                                  #.(error "static-vectors does not support this Common Lisp implementation!"))
                (:file "constructor" :depends-on ("pkgdcl" "constantp" "initialize" "impl"))
                (:file "cffi-type-translator" :depends-on ("pkgdcl" "impl"))))
 
