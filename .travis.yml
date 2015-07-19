@@ -10,12 +10,22 @@ env:
     - LISP=sbcl
     - LISP=sbcl32
 
+matrix:
+  allow_failures:
+    - env: LISP=allegro
+    - env: LISP=cmucl
+
 install:
+  - if [ "$LISP" = "allegro" ]; then sudo apt-get install libc6-dev-i386 libffi-dev:i386; fi
+  - mkdir -p ~/.cim/config/
   - curl -L https://github.com/luismbo/cl-travis/raw/master/install.sh | sh
-  - cl -e "(dolist (p '(:uiop :cffi))
-             (ql:quickload p :verbose t))
-           (uiop:quit 0)"
+  - cl -e "(cl:in-package :cl-user)
+           (dolist (p '(:cffi :fiveam))
+             (ql:quickload p :verbose t))"
 
 script:
-  - cl -e '(ql:quickload :static-vector/tests)
-           (uiop:quit (if (asdf:test-system :static-vectors) 1 0))'
+  - cl -e "(cl:in-package :cl-user)
+           (ql:quickload :static-vectors/test :verbose t)
+           (uiop:quit (if (some (lambda (x) (typep x '5am::test-failure))
+                                (5am:run :static-vectors))
+                          1 0))"
