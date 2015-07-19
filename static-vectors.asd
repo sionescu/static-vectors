@@ -31,8 +31,11 @@
                (:file "cffi-type-translator" :depends-on ("pkgdcl" "impl"))))
 
 (defsystem :static-vectors/test
-  :depends-on (:static-vectors :fiveam)
+  :description "Static-vectors test suite."
+  :author "Stelian Ionescu <sionescu@cddr.org>"
+  :licence "MIT"
   :version (:read-file-form "version.sexp")
+  :depends-on (:static-vectors :fiveam)
   :pathname "tests/"
   :components ((:file "static-vectors-tests")))
 
