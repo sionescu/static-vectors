@@ -17,7 +17,6 @@ matrix:
 
 install:
   - if [ "$LISP" = "allegro" ]; then sudo apt-get install libc6-dev-i386 libffi-dev:i386; fi
-  - mkdir -p ~/.cim/config/
   - curl -L https://github.com/luismbo/cl-travis/raw/master/install.sh | sh
   - cl -e "(cl:in-package :cl-user)
            (dolist (p '(:cffi :fiveam))
