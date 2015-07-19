@@ -1,0 +1,21 @@
+language: lisp
+
+env:
+  matrix:
+    - LISP=allegro
+    - LISP=ccl
+    - LISP=ccl32
+    - LISP=cmucl
+    - LISP=ecl
+    - LISP=sbcl
+    - LISP=sbcl32
+
+install:
+  - curl -L https://github.com/luismbo/cl-travis/raw/master/install.sh | sh
+  - cl -e "(dolist (p '(:uiop :cffi))
+             (ql:quickload p :verbose t))
+           (uiop:quit 0)"
+
+script:
+  - cl -e '(ql:quickload :static-vector/tests)
+           (uiop:quit (if (asdf:test-system :static-vectors) 1 0))'
