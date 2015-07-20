@@ -15,6 +15,19 @@ matrix:
     - env: LISP=allegro
     - env: LISP=cmucl
 
+notifications:
+  email:
+    on_success: change
+    on_failure: always
+  irc:
+    channels:
+      - "chat.freenode.net#iolib"
+    template:
+      - "%{repository} (%{commit}) : %{message}"
+      - "Build details: %{build_url}"
+    on_success: always
+    on_failure: always
+
 install:
   - if [ "$LISP" = "allegro" ]; then sudo apt-get install libc6-dev-i386 libffi-dev:i386; fi
   - curl -L https://github.com/luismbo/cl-travis/raw/master/install.sh | sh
