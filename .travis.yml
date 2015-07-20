@@ -22,11 +22,10 @@ notifications:
   irc:
     channels:
       - "chat.freenode.net#iolib"
-    template:
-      - "%{repository} (%{commit}) : %{message}"
-      - "Build details: %{build_url}"
-    on_success: always
+    on_success: change
     on_failure: always
+    use_notice: true
+    skip_join: true
 
 install:
   - if [ "$LISP" = "allegro" ]; then sudo apt-get install libc6-dev-i386 libffi-dev:i386; fi
