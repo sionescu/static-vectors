@@ -1,7 +1,7 @@
 ;;;; -*- Mode: Lisp; indent-tabs-mode: nil -*-
 
-#.(unless (or #+asdf3 (asdf/driver:version<= "2.32" (asdf-version)))
-    (error "You need ASDF >= 2.32 to load this system correctly."))
+#.(unless (or #+asdf3.1 (version<= "3.1" (asdf-version)))
+    (error "You need ASDF >= 3.1 to load this system correctly."))
 
 (defsystem :static-vectors
   :description "Create vectors allocated in static memory."
@@ -41,4 +41,4 @@
 
 (defmethod perform ((o test-op) (c (eql (find-system :static-vectors))))
   (load-system :static-vectors/test :force '(:static-vectors/test))
-  (uiop:symbol-call :5am :run! :static-vectors))
+  (symbol-call :5am :run! :static-vectors))
