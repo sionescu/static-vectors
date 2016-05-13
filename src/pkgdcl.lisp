@@ -13,6 +13,7 @@
    #:make-static-vector
    #:free-static-vector
    #:with-static-vector
+   #:with-static-vectors
 
    ;; Accessors
    #:static-vector-pointer
