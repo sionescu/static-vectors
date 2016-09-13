@@ -9,10 +9,7 @@
 
 (in-package :static-vectors/test)
 
-(def-suite :static-vectors)
-(def-suite :static-vectors.make-static-vectors :in :static-vectors)
-
-(in-suite :static-vectors.make-static-vectors)
+(in-suite* :static-vectors)
 
 (test (make-static-vector.plain.notinline
        :compile-at :definition-time)
