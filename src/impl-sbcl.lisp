@@ -26,7 +26,9 @@
   (let ((upgraded-type (upgraded-array-element-type type)))
     (case upgraded-type
       ((nil t) (error "~A is not a specializable array element type" type))
-      (t       (sb-impl::%vector-widetag-and-n-bits type)))))
+      (t       (#.(or (find-symbol (string '#:%vector-widetag-and-n-bits) "SB-IMPL")
+                      (find-symbol (string '#:%vector-widetag-and-n-bits-shift) "SB-IMPL"))
+                  type)))))
 
 (declaim (inline static-alloc))
 (defun static-alloc (size)
