@@ -25,7 +25,7 @@
 (defun vector-widetag-and-n-bits (type)
   (let ((upgraded-type (upgraded-array-element-type type)))
     (case upgraded-type
-      ((nil t) (error "~A is not a specializable array element type" type))
+      (nil (error "~A is not a specializable array element type" type))
       (t
        #+#.(cl:if (cl:find-symbol "%VECTOR-WIDETAG-AND-N-BITS" "SB-IMPL")
                   '(and) '(or))
