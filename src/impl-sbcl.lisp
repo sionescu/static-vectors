@@ -59,14 +59,19 @@
            (* 2 sb-vm:n-word-bits)))
        +array-header-size+)))
 
+(declaim (inline vector-from-pointer))
+(defun vector-from-pointer (pointer widetag length)
+  (declare (inline sb-vm:fixnumize))
+  (setf (sb-sys:sap-ref-word pointer                  0) widetag
+        (sb-sys:sap-ref-word pointer sb-vm:n-word-bytes) (sb-vm:fixnumize length))
+  (sb-kernel:%make-lisp-obj (logior (pointer-address pointer)
+                                    sb-vm:other-pointer-lowtag)))
+
 (declaim (inline %%allocate-static-vector))
 (defun %%allocate-static-vector (allocation-size widetag length)
-  (declare (inline sb-vm:fixnumize))
-  (let ((memblock (static-alloc allocation-size)))
-    (setf (sb-sys:sap-ref-word memblock                  0) widetag
-          (sb-sys:sap-ref-word memblock sb-vm:n-word-bytes) (sb-vm:fixnumize length))
-    (sb-kernel:%make-lisp-obj (logior (pointer-address memblock)
-                                      sb-vm:other-pointer-lowtag))))
+  (vector-from-pointer (static-alloc allocation-size)
+                       widetag
+                       length))
 
 (defun %allocate-static-vector (length element-type)
   (multiple-value-bind (widetag n-bits)
