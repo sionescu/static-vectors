@@ -79,3 +79,27 @@
                                  :initial-contents '(1 2 3 4 5)))))
     (declare (ignore warnp))
     (is-false (and function (not failp)))))
+
+(test (with-static-vector.defaults
+       :compile-at :definition-time)
+  (with-static-vector (v 5)
+    (is (= 5 (length v)))
+    (is (equal '(unsigned-byte 8) (array-element-type v)))))
+
+(test (with-static-vector.element-type
+       :compile-at :definition-time)
+  (with-static-vector (v 3 :element-type '(unsigned-byte 16))
+    (is (= 3 (length v)))
+    (is (equal '(unsigned-byte 16) (array-element-type v)))))
+
+(test (with-static-vector.initial-element
+       :compile-at :definition-time)
+  (with-static-vector (v 3 :initial-element 7)
+    (is (= 3 (length v)))
+    (is (equalp v #(7 7 7)))))
+
+(test (with-static-vector.initial-contents
+       :compile-at :definition-time)
+  (with-static-vector (v 3 :initial-contents '(3 14 29))
+    (is (= 3 (length v)))
+    (is (equalp v #(3 14 29)))))

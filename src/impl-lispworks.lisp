@@ -37,11 +37,11 @@ VECTOR must be a vector created by MAKE-STATIC-VECTOR."
   (values))
 
 (defmacro with-static-vector ((var length &rest args
-                               &key (element-type ''(unsigned-byte 8))
-                               (initial-element nil))
+                               &key (element-type '(unsigned-byte 8))
+                                 initial-contents initial-element)
                               &body body)
   "Bind PTR-VAR to a static vector of length LENGTH and execute BODY
 within its dynamic extent. The vector is freed upon exit."
-  (declare (ignore element-type initial-element))
+  (declare (ignore element-type initial-contents initial-element))
   `(let ((,var (make-static-vector ,length ,@args)))
      ,@body))
