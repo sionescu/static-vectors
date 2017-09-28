@@ -61,7 +61,6 @@
 
 (declaim (inline %%allocate-static-vector))
 (defun %%allocate-static-vector (allocation-size widetag length)
-  (declare (inline sb-vm:fixnumize))
   (let ((memblock (static-alloc allocation-size)))
     (setf (sb-sys:sap-ref-word memblock                  0) widetag
           (sb-sys:sap-ref-word memblock sb-vm:n-word-bytes) (sb-vm:fixnumize length))
