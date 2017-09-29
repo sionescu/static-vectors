@@ -49,3 +49,12 @@ foreign memory so you must always call FREE-STATIC-VECTOR to free it."
                          ,initial-element ,initial-element-p
                          ,initial-contents ,initial-contents-p))))
         (t form)))))
+
+(defmacro with-static-vectors (((var length &rest args) &rest more-clauses)
+                               &body body)
+  "Allocate multiple static vectors at once."
+  `(with-static-vector (,var ,length ,@args)
+     ,@(if more-clauses
+           `((with-static-vectors ,more-clauses
+               ,@body))
+           body)))

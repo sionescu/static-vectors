@@ -103,3 +103,10 @@
   (with-static-vector (v 3 :initial-contents '(3 14 29))
     (is (= 3 (length v)))
     (is (equalp v #(3 14 29)))))
+
+(test (with-static-vectors.initialization
+       :compile-at :definition-time)
+  (with-static-vectors ((v1 3 :initial-element 7)
+                        (v2 5 :initial-contents '(1 2 3 4 5)))
+    (is (equalp v1 #(7 7 7)))
+    (is (equalp v2 #(1 2 3 4 5)))))
