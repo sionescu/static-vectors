@@ -40,5 +40,5 @@
   :components ((:file "static-vectors-tests")))
 
 (defmethod perform ((o test-op) (c (eql (find-system :static-vectors))))
-  (load-system :static-vectors/test :force '(:static-vectors/test))
+  (load-system :static-vectors/test)
   (symbol-call :5am :run! :static-vectors))
