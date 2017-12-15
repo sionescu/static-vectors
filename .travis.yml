@@ -6,7 +6,6 @@ env:
     - LISP=ccl
     - LISP=ccl32
     - LISP=cmucl
-    - LISP=ecl
     - LISP=sbcl
     - LISP=sbcl32
 
@@ -14,6 +13,7 @@ matrix:
   allow_failures:
     - env: LISP=allegro
     - env: LISP=cmucl
+    - env: LISP=ecl
 
 notifications:
   email:
