@@ -6,6 +6,7 @@ env:
     - LISP=ccl
     - LISP=ccl32
     - LISP=cmucl
+    - LISP=ecl
     - LISP=sbcl
     - LISP=sbcl32
 
