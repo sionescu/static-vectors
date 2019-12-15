@@ -70,8 +70,7 @@
     (is (equal 5 (length v)))
     (is (not (mismatch v '(1 2 3 4 5))))))
 
-(test (make-static-vector.initial-element-and-contents.compiler-macro.error
-       :compile-at :definition-time)
+(test (make-static-vector.initial-element-and-contents.compiler-macro.error)
   (multiple-value-bind (function warnp failp)
       (ignore-errors
        (compile nil '(lambda ()
