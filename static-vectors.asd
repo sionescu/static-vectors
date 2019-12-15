@@ -29,7 +29,8 @@
                                 #-(or allegro ccl clasp cmu ecl lispworks sbcl)
                                   #.(error "static-vectors does not support this Common Lisp implementation!"))
                (:file "constructor" :depends-on ("pkgdcl" "constantp" "initialize" "impl"))
-               (:file "cffi-type-translator" :depends-on ("pkgdcl" "impl"))))
+               (:file "cffi-type-translator" :depends-on ("pkgdcl" "impl")))
+  :in-order-to ((test-op (test-op :static-vectors/test))))
 
 (defsystem :static-vectors/test
   :description "Static-vectors test suite."
@@ -38,8 +39,5 @@
   :version (:read-file-form "version.sexp")
   :depends-on (:static-vectors :fiveam)
   :pathname "tests/"
-  :components ((:file "static-vectors-tests")))
-
-(defmethod perform ((o test-op) (c (eql (find-system :static-vectors))))
-  (load-system :static-vectors/test)
-  (symbol-call :5am :run! :static-vectors))
+  :components ((:file "static-vectors-tests"))
+  :perform (test-op (o c) (symbol-call :5am :run! :static-vectors)))
