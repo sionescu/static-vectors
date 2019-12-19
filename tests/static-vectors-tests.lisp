@@ -83,13 +83,17 @@
        :compile-at :definition-time)
   (with-static-vector (v 5)
     (is (= 5 (length v)))
-    (is (equal '(unsigned-byte 8) (array-element-type v)))))
+    (is (equal (array-element-type v)
+               (upgraded-array-element-type
+                '(unsigned-byte 8))))))
 
 (test (with-static-vector.element-type
        :compile-at :definition-time)
   (with-static-vector (v 3 :element-type '(unsigned-byte 16))
     (is (= 3 (length v)))
-    (is (equal '(unsigned-byte 16) (array-element-type v)))))
+    (is (equal (array-element-type v)
+               (upgraded-array-element-type
+                '(unsigned-byte 16))))))
 
 (test (with-static-vector.initial-element
        :compile-at :definition-time)

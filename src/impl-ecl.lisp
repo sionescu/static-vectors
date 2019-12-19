@@ -26,13 +26,8 @@
 (defun static-vector-address (vector)
   "Return a foreign pointer to VECTOR(including its header).
 VECTOR must be a vector created by MAKE-STATIC-VECTOR."
-  ;; ecl_array_data is a union, so we don't have to pick the specific
-  ;; fields out of it, so long as we know the array has the expected
-  ;; type.
-  (ffi:c-inline (vector) (object) :unsigned-long
-                "(unsigned long) #0->vector.self.b8"
-                :side-effects nil
-                :one-liner t))
+  (si:foreign-data-address
+   (si:make-foreign-data-from-array vector)))
 
 (declaim (inline static-vector-pointer))
 (defun static-vector-pointer (vector &key (offset 0))
