@@ -8,25 +8,26 @@
   :author "Stelian Ionescu <sionescu@cddr.org>"
   :licence "MIT"
   :version (:read-file-form "version.sexp")
-  :defsystem-depends-on (#+(or allegro clasp cmu ecl sbcl) :cffi-grovel)
+  :defsystem-depends-on (#+(or abcl allegro clasp cmu ecl sbcl) :cffi-grovel)
   :depends-on (:alexandria :cffi)
   :pathname "src/"
   :components ((:file "pkgdcl")
                (:file "constantp" :depends-on ("pkgdcl"))
                (:file "initialize" :depends-on ("pkgdcl" "constantp"))
-               #+(or allegro clasp cmu ecl)
+               #+(or abcl allegro clasp cmu ecl)
                (:cffi-grovel-file "ffi-types" :depends-on ("pkgdcl"))
                (:file "impl"
                       :depends-on ("pkgdcl" "constantp" "initialize"
-                                   #+(or allegro cmu ecl) "ffi-types")
-                      :pathname #+allegro   "impl-allegro"
+                                   #+(or abcl allegro cmu ecl) "ffi-types")
+                      :pathname #+abcl      "impl-abcl"
+                                #+allegro   "impl-allegro"
                                 #+ccl       "impl-clozure"
                                 #+clasp     "impl-clasp"
                                 #+cmu       "impl-cmucl"
                                 #+ecl       "impl-ecl"
                                 #+lispworks "impl-lispworks"
                                 #+sbcl      "impl-sbcl"
-                                #-(or allegro ccl clasp cmu ecl lispworks sbcl)
+                                #-(or abcl allegro ccl clasp cmu ecl lispworks sbcl)
                                   #.(error "static-vectors does not support this Common Lisp implementation!"))
                (:file "constructor" :depends-on ("pkgdcl" "constantp" "initialize" "impl"))
                (:file "cffi-type-translator" :depends-on ("pkgdcl" "impl")))
