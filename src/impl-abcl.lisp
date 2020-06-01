@@ -5,12 +5,10 @@
 
 (in-package :static-vectors)
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (unless
-      (fboundp (uiop:find-symbol* :make-niobuffer-vector :ext nil))
-    (error "For allocating memory via malloc(), ABCL needs an
+#-nio
+(error "For allocating memory via malloc(), ABCL needs an
 implementation of EXT:MAKE-NIOBUFFER-VECTOR, available in
-abcl-1.6.2-dev and the upcoming abcl-1.7.0.")))
+abcl-1.6.2-dev and the upcoming abcl-1.7.0.")
 
 (declaim (inline fill-foreign-memory))
 (defun fill-foreign-memory (pointer length value)
@@ -49,7 +47,7 @@ abcl-1.6.2-dev and the upcoming abcl-1.7.0.")))
            (bytebuffer
              (#"getByteBuffer" heap-pointer 0 bytes))
            (static-vector
-             (ext:make-niobuffer-vector bytebuffer :element-type element-type)))
+             (make-array :element-type element-type :nio-buffer bytebuffer)))
       (setf (gethash static-vector *static-vector-pointer*)
             heap-pointer)
       (values
