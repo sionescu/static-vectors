@@ -13,11 +13,10 @@
   :pathname "src/"
   :components ((:file "pkgdcl")
                (:file "constantp" :depends-on ("pkgdcl"))
-               (:file "initialize" :depends-on ("pkgdcl" "constantp"))
                #+(or abcl allegro clasp cmu ecl)
                (:cffi-grovel-file "ffi-types" :depends-on ("pkgdcl"))
                (:file "impl"
-                      :depends-on ("pkgdcl" "constantp" "initialize"
+                      :depends-on ("pkgdcl" "constantp"
                                    #+(or abcl allegro cmu ecl) "ffi-types")
                       :pathname #+abcl      "impl-abcl"
                                 #+allegro   "impl-allegro"
@@ -29,7 +28,7 @@
                                 #+sbcl      "impl-sbcl"
                                 #-(or abcl allegro ccl clasp cmu ecl lispworks sbcl)
                                   #.(error "static-vectors does not support this Common Lisp implementation!"))
-               (:file "constructor" :depends-on ("pkgdcl" "constantp" "initialize" "impl"))
+               (:file "constructor" :depends-on ("pkgdcl" "constantp" "impl"))
                (:file "cffi-type-translator" :depends-on ("pkgdcl" "impl")))
   :in-order-to ((test-op (test-op :static-vectors/test))))
 

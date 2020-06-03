@@ -5,6 +5,23 @@
 
 (in-package :static-vectors)
 
+(declaim (inline check-initial-element))
+(defun check-initial-element (element-type initial-element)
+  (when (not (typep initial-element element-type))
+    ;; FIXME: signal SUBTYPE-ERROR
+    (error "MAKE-STATIC-VECTOR: The type of :INITIAL-ELEMENT ~S is not a subtype ~
+of the array's :ELEMENT-TYPE ~S"
+           initial-element element-type)))
+
+(declaim (inline check-initial-contents))
+(defun check-initial-contents (length initial-contents)
+  (let ((initial-contents-length (length initial-contents)))
+    (when (/= length initial-contents-length)
+      ;; FIXME: signal TYPE-ERROR
+      (error "MAKE-STATIC-VECTOR: There are ~A elements in the :INITIAL-CONTENTS, ~
+but requested vector length is ~A."
+             initial-contents-length length))))
+
 (declaim (inline check-initialization-arguments))
 (defun check-initialization-arguments (initial-element-p initial-contents-p)
   (when (and initial-element-p initial-contents-p)
@@ -31,30 +48,14 @@ not be moved by the garbage collector. The vector might be allocated in
 foreign memory so you must always call FREE-STATIC-VECTOR to free it."
   (declare #+sbcl (sb-ext:muffle-conditions sb-ext:compiler-note)
            (optimize speed)
-           (notinline %allocate-static-vector %initialize-vector))
+           (notinline %allocate-static-vector))
   (check-arguments length element-type initial-element initial-element-p
                    initial-contents initial-contents-p)
   (let ((vector
           (%allocate-static-vector length element-type)))
-    (%initialize-vector vector length element-type
-                        initial-element initial-element-p
-                        initial-contents initial-contents-p)))
-
-(define-compiler-macro make-static-vector (&whole form &environment env
-                                           length &key (element-type ''(unsigned-byte 8))
-                                           (initial-element nil initial-element-p)
-                                           (initial-contents nil initial-contents-p))
-  (check-initialization-arguments initial-element-p initial-contents-p)
-  (cond
-    ((constantp element-type env)
-     (with-gensyms (vector)
-       (once-only (length)
-         `(let* ((,vector (%allocate-static-vector ,length ,element-type)))
-            (cmfuncall %initialize-vector ,vector ,length ,element-type
-                       ,initial-element ,initial-element-p
-                       ,initial-contents ,initial-contents-p)
-            ,vector))))
-    (t form)))
+    (if initial-element-p
+        (fill vector initial-element)
+        (replace vector initial-contents))))
 
 (defmacro with-static-vectors (((var length &rest args) &rest more-clauses)
                                &body body)
