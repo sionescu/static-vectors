@@ -5,6 +5,23 @@
 
 (in-package :static-vectors)
 
+(declaim (inline check-initialization-arguments))
+(defun check-initialization-arguments (initial-element-p initial-contents-p)
+  (when (and initial-element-p initial-contents-p)
+    ;; FIXME: signal ARGUMENT-LIST-ERROR
+    (error "MAKE-STATIC-VECTOR: You must not specify both ~
+:INITIAL-ELEMENT and :INITIAL-CONTENTS")))
+
+(defun check-arguments (length element-type
+                        initial-element initial-element-p
+                        initial-contents initial-contents-p)
+  (check-initialization-arguments initial-element-p initial-contents-p)
+  (check-type length non-negative-fixnum)
+  (when initial-element-p
+    (check-initial-element element-type initial-element))
+  (when initial-contents-p
+    (check-initial-contents length initial-contents)))
+
 (declaim (inline make-static-vector))
 (defun make-static-vector (length &key (element-type '(unsigned-byte 8))
                            (initial-element nil initial-element-p)
@@ -28,28 +45,16 @@ foreign memory so you must always call FREE-STATIC-VECTOR to free it."
                                            (initial-element nil initial-element-p)
                                            (initial-contents nil initial-contents-p))
   (check-initialization-arguments initial-element-p initial-contents-p)
-  (with-gensyms (len-var vector)
-    (let ((len-val length))
-      (cond
-        ((constantp element-type env)
-         (let ((allocation-form
-                 (cond
-                   ((constantp length env)
-                    (setf len-val (eval-constant length env))
-                    (check-type len-val non-negative-fixnum)
-                    `(cmfuncall %allocate-static-vector ,len-val ,element-type))
-                   (t
-                    `(progn
-                       (check-type ,len-var non-negative-fixnum)
-                       (cmfuncall %allocate-static-vector ,len-var ,element-type))))))
-           `(let* ((,len-var ,len-val)
-                   (,vector ,allocation-form))
-              (declare (ignorable ,len-var))
-              (cmfuncall %initialize-vector ,vector ,len-var ,element-type
-                         ,initial-element ,initial-element-p
-                         ,initial-contents ,initial-contents-p)
-              ,vector)))
-        (t form)))))
+  (cond
+    ((constantp element-type env)
+     (with-gensyms (vector)
+       (once-only (length)
+         `(let* ((,vector (%allocate-static-vector ,length ,element-type)))
+            (cmfuncall %initialize-vector ,vector ,length ,element-type
+                       ,initial-element ,initial-element-p
+                       ,initial-contents ,initial-contents-p)
+            ,vector))))
+    (t form)))
 
 (defmacro with-static-vectors (((var length &rest args) &rest more-clauses)
                                &body body)

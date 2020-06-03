@@ -5,13 +5,6 @@
 
 (in-package :static-vectors)
 
-(declaim (inline check-initialization-arguments))
-(defun check-initialization-arguments (initial-element-p initial-contents-p)
-  (when (and initial-element-p initial-contents-p)
-    ;; FIXME: signal ARGUMENT-LIST-ERROR
-    (error "MAKE-STATIC-VECTOR: You must not specify both ~
-:INITIAL-ELEMENT and :INITIAL-CONTENTS")))
-
 (declaim (inline check-initial-element))
 (defun check-initial-element (element-type initial-element)
   (when (not (typep initial-element element-type))
@@ -28,16 +21,6 @@ of the array's :ELEMENT-TYPE ~S"
       (error "MAKE-STATIC-VECTOR: There are ~A elements in the :INITIAL-CONTENTS, ~
 but requested vector length is ~A."
              initial-contents-length length))))
-
-(defun check-arguments (length element-type
-                        initial-element initial-element-p
-                        initial-contents initial-contents-p)
-  (check-initialization-arguments initial-element-p initial-contents-p)
-  (check-type length non-negative-fixnum)
-  (when initial-element-p
-    (check-initial-element element-type initial-element))
-  (when initial-contents-p
-    (check-initial-contents length initial-contents)))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defconstant +static-vectors-are-garbage-collected+
@@ -62,12 +45,11 @@ but requested vector length is ~A."
   ;; These two are kept because the compiler-macro uses them to check for the validity
   ;; of the INITIAL-ELEMENT and INITIAL-CONTENTS
   (declare (ignore length element-type))
-  (cond
-    (initial-element-p
-     (free-vector-on-error (vector)
-       (fill vector initial-element)))
-    (initial-contents-p
-     (free-vector-on-error (vector)
+  (free-vector-on-error (vector)
+    (cond
+      (initial-element-p
+       (fill vector initial-element))
+      (initial-contents-p
        (replace vector initial-contents))))
   vector)
 
