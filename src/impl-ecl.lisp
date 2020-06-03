@@ -43,7 +43,7 @@ VECTOR must be a vector created by MAKE-STATIC-VECTOR."
   (values))
 
 (defmacro with-static-vector ((var length &rest args
-                               &key (element-type '(unsigned-byte 8))
+                               &key (element-type ''(unsigned-byte 8))
                                  initial-contents initial-element)
                               &body body &environment env)
   "Bind PTR-VAR to a static vector of length LENGTH and execute BODY
