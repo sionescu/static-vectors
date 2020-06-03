@@ -30,13 +30,6 @@
      #-(or clozure sbcl)
      (eval form))))
 
-(defmacro cmfuncall (op &rest args &environment env)
-  (let ((cmfun (compiler-macro-function op))
-        (form (cons op args)))
-    (if cmfun
-        (funcall cmfun form env)
-        form)))
-
 (defun canonicalize-args (env element-type length)
   (let* ((eltype-spec (or (and (constantp element-type)
                                (ignore-errors
