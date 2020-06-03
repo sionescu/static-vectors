@@ -36,60 +36,28 @@
            (sb-impl::%vector-widetag-and-n-bits-shift type)
          (values widetag (ash 1 shift)))))))
 
-(declaim (inline static-alloc))
-(defun static-alloc (size)
-  (let ((ptr (foreign-alloc :char :count size)))
-    (if (null-pointer-p ptr)
-        ;; FIXME: signal proper error condition
-        (error 'storage-condition)
-        ptr)))
-
-(declaim (inline %allocation-size))
-(defun %allocation-size (length widetag n-bits)
-  (flet ((string-widetag-p (widetag)
-           (or (= widetag sb-vm:simple-base-string-widetag)
-               #+sb-unicode
-               (= widetag sb-vm:simple-character-string-widetag))))
-    (+ (* 2 sb-vm:n-word-bytes
-          (ceiling
-           (* (if (string-widetag-p widetag)
-                    (1+ length)  ; for the final #\Null
-                    length)
-              n-bits)
-           (* 2 sb-vm:n-word-bits)))
-       +array-header-size+)))
-
-(declaim (inline %%allocate-static-vector))
-(defun %%allocate-static-vector (allocation-size widetag length)
-  (let ((pointer (static-alloc allocation-size)))
-    (setf (sb-sys:sap-ref-word pointer 0) widetag
-          (sb-sys:sap-ref-word pointer sb-vm:n-word-bytes) (sb-vm:fixnumize length))
-    (sb-kernel:%make-lisp-obj (logior (pointer-address pointer)
-                                      sb-vm:other-pointer-lowtag))))
-
 (defun %allocate-static-vector (length element-type)
-  (multiple-value-bind (widetag n-bits)
-      (vector-widetag-and-n-bits element-type)
-    (let ((allocation-size
-           (%allocation-size length widetag n-bits)))
-      (%%allocate-static-vector allocation-size widetag length))))
-
-(define-compiler-macro %allocate-static-vector
-    (&whole form length element-type &environment env)
-  (cond
-    ((constantp element-type env)
-     (let ((element-type (eval-constant element-type env)))
-       (multiple-value-bind (widetag n-bits)
-           (vector-widetag-and-n-bits element-type)
-         (if (constantp length env)
-             (let ((allocation-size (%allocation-size length widetag n-bits)))
-               `(the* (simple-array ,element-type (,length))
-                      (%%allocate-static-vector ,allocation-size ,widetag ,length)))
-             (once-only (length)
-               (let ((allocation-size `(%allocation-size ,length ,widetag ,n-bits)))
-                 `(the* (simple-array ,element-type (*))
-                        (%%allocate-static-vector ,allocation-size ,widetag ,length))))))))
-    (t form)))
+  (labels ((string-widetag-p (widetag)
+             (or (= widetag sb-vm:simple-base-string-widetag)
+                 #+sb-unicode
+                 (= widetag sb-vm:simple-character-string-widetag)))
+           (allocation-size (length widetag n-bits)
+             (+ (* 2 sb-vm:n-word-bytes
+                   (ceiling
+                    (* (if (string-widetag-p widetag)
+                           (1+ length)  ; for the final #\Null
+                           length)
+                       n-bits)
+                    (* 2 sb-vm:n-word-bits)))
+                +array-header-size+)))
+    (multiple-value-bind (widetag n-bits)
+        (vector-widetag-and-n-bits element-type)
+      (let* ((size (allocation-size length widetag n-bits))
+             (pointer (foreign-alloc :char :count size)))
+        (setf (sb-sys:sap-ref-word pointer 0) widetag
+              (sb-sys:sap-ref-word pointer sb-vm:n-word-bytes) (sb-vm:fixnumize length))
+        (sb-kernel:%make-lisp-obj (logior (pointer-address pointer)
+                                          sb-vm:other-pointer-lowtag))))))
 
 (declaim (inline static-vector-address))
 (defun static-vector-address (vector)
