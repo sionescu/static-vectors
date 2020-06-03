@@ -87,13 +87,24 @@
                (upgraded-array-element-type
                 '(unsigned-byte 8))))))
 
-(test (with-static-vector.element-type
+(test (with-static-vector.element-type.literal
        :compile-at :definition-time)
   (with-static-vector (v 3 :element-type '(unsigned-byte 16))
     (is (= 3 (length v)))
     (is (equal (array-element-type v)
                (upgraded-array-element-type
                 '(unsigned-byte 16))))))
+
+(deftype eltype ()
+  '(unsigned-byte 32))
+
+(test (with-static-vector.element-type.deftype
+        :compile-at :definition-time)
+  (with-static-vector (v 3 :element-type 'eltype)
+    (is (= 3 (length v)))
+    (is (equal (array-element-type v)
+               (upgraded-array-element-type
+                '(unsigned-byte 32))))))
 
 (test (with-static-vector.initial-element
        :compile-at :definition-time)

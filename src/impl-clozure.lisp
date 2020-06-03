@@ -40,13 +40,16 @@ VECTOR must be a vector created by MAKE-STATIC-VECTOR."
 (defmacro with-static-vector ((var length &rest args
                                &key (element-type '(unsigned-byte 8))
                                  initial-contents initial-element)
-                              &body body)
+                              &body body &environment env)
   "Bind PTR-VAR to a static vector of length LENGTH and execute BODY
 within its dynamic extent. The vector is freed upon exit."
-  (declare (ignore element-type initial-contents initial-element))
-  `(let ((,var nil))
-     (unwind-protect
-          (progn
-            (setf ,var (make-static-vector ,length ,@args))
-            (locally ,@body))
-       (when ,var (free-static-vector ,var)))))
+  (declare (ignorable element-type initial-contents initial-element))
+  (multiple-value-bind (real-element-type length type)
+      (canonicalize-args env element-type length)
+    (remf args :element-type)
+    `(let ((,var (make-static-vector ,length ,@args
+                                     :element-type ',real-element-type)))
+       ,.(if type `((declare (type ,type ,var))) nil)
+       (unwind-protect
+            (locally ,@body)
+         (when ,var (free-static-vector ,var))))))

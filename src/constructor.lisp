@@ -47,7 +47,8 @@ foreign memory so you must always call FREE-STATIC-VECTOR to free it."
               (declare (ignorable ,len-var))
               (cmfuncall %initialize-vector ,vector ,len-var ,element-type
                          ,initial-element ,initial-element-p
-                         ,initial-contents ,initial-contents-p))))
+                         ,initial-contents ,initial-contents-p)
+              ,vector)))
         (t form)))))
 
 (defmacro with-static-vectors (((var length &rest args) &rest more-clauses)

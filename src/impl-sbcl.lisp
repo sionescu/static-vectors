@@ -59,18 +59,13 @@
            (* 2 sb-vm:n-word-bits)))
        +array-header-size+)))
 
-(declaim (inline vector-from-pointer))
-(defun vector-from-pointer (pointer widetag length)
-  (setf (sb-sys:sap-ref-word pointer                  0) widetag
-        (sb-sys:sap-ref-word pointer sb-vm:n-word-bytes) (sb-vm:fixnumize length))
-  (sb-kernel:%make-lisp-obj (logior (pointer-address pointer)
-                                    sb-vm:other-pointer-lowtag)))
-
 (declaim (inline %%allocate-static-vector))
 (defun %%allocate-static-vector (allocation-size widetag length)
-  (vector-from-pointer (static-alloc allocation-size)
-                       widetag
-                       length))
+  (let ((pointer (static-alloc allocation-size)))
+    (setf (sb-sys:sap-ref-word pointer 0) widetag
+          (sb-sys:sap-ref-word pointer sb-vm:n-word-bytes) (sb-vm:fixnumize length))
+    (sb-kernel:%make-lisp-obj (logior (pointer-address pointer)
+                                      sb-vm:other-pointer-lowtag))))
 
 (defun %allocate-static-vector (length element-type)
   (multiple-value-bind (widetag n-bits)
@@ -122,12 +117,17 @@ VECTOR must be a vector created by MAKE-STATIC-VECTOR."
 (defmacro with-static-vector ((var length &rest args
                                &key (element-type '(unsigned-byte 8))
                                  initial-contents initial-element)
-                              &body body)
+                              &body body &environment env)
   "Bind PTR-VAR to a static vector of length LENGTH and execute BODY
 within its dynamic extent. The vector is freed upon exit."
-  (declare (ignore element-type initial-contents initial-element))
-  `(sb-sys:without-interrupts
-     (let ((,var (make-static-vector ,length ,@args)))
-       (unwind-protect
-            (sb-sys:with-local-interrupts ,@body)
-         (when ,var (free-static-vector ,var))))))
+  (declare (ignorable element-type initial-contents initial-element))
+  (multiple-value-bind (real-element-type length type)
+      (canonicalize-args env element-type length)
+    (remf args :element-type)
+    `(sb-sys:without-interrupts
+       (let ((,var (make-static-vector ,length ,@args
+                                       :element-type ',real-element-type)))
+         ,.(if type `((declare (type ,type ,var))) nil)
+         (unwind-protect
+              (sb-sys:with-local-interrupts ,@body)
+           (when ,var (free-static-vector ,var)))))))

@@ -41,8 +41,8 @@ but requested vector length is ~A."
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defconstant +static-vectors-are-garbage-collected+
-    #+(or ecl lispworks) t
-    #-(or ecl lispworks) nil))
+    #+(or cmucl ecl lispworks) t
+    #-(or cmucl ecl lispworks) nil))
 
 (defmacro free-vector-on-error ((vector) &body body)
   (if +static-vectors-are-garbage-collected+
