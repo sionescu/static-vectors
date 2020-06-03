@@ -47,8 +47,7 @@ but requested vector length is ~A."
 not be moved by the garbage collector. The vector might be allocated in
 foreign memory so you must always call FREE-STATIC-VECTOR to free it."
   (declare #+sbcl (sb-ext:muffle-conditions sb-ext:compiler-note)
-           (optimize speed)
-           (notinline %allocate-static-vector))
+           (optimize speed))
   (check-arguments length element-type initial-element initial-element-p
                    initial-contents initial-contents-p)
   (let ((vector
