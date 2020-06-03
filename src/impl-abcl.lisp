@@ -5,6 +5,11 @@
 
 (in-package :static-vectors)
 
+#-nio
+(error "For allocating memory via malloc() we need the :NIO-BUFFER
+argument to CL:MAKE-ARRAY available in abcl-1.6.2-dev and the upcoming
+abcl-1.7.0.")
+
 (declaim (inline fill-foreign-memory))
 (defun fill-foreign-memory (pointer length value)
   (foreign-funcall "memset" :pointer pointer :int value size-t length :pointer)
@@ -22,17 +27,27 @@
 
 (declaim (inline %allocate-static-vector))
 (defun %allocate-static-vector (length element-type)
-  (flet ((size-of (element-type)
-           ;; assume 8-bit bytes
-           1))
+  (let* ((type
+          (first element-type))
+         (bits-per-byte
+           (second element-type))
+         (bytes-per-element  ;; ehh, not going to work well for element type not of size 8, 16, or 32
+           (ceiling bits-per-byte 8)))
+    (unless (subtypep element-type
+                      '(or (unsigned-byte 8) (unsigned-byte 16) (unsigned-byte 32)))
+      (signal 'type-error :datum element-type
+                          :expected-type '(or
+                                           (unsigned-byte 8)
+                                           (unsigned-byte 16)
+                                           (unsigned-byte 32))))
     (let* ((bytes
-             (* length (size-of element-type)))
+             (* length bytes-per-element))
            (heap-pointer
              (jss:new "com.sun.jna.Memory" bytes))
            (bytebuffer
              (#"getByteBuffer" heap-pointer 0 bytes))
            (static-vector
-             (ext:make-bytebuffer-byte-vector bytebuffer)))
+             (make-array length :element-type element-type :nio-buffer bytebuffer)))
       (setf (gethash static-vector *static-vector-pointer*)
             heap-pointer)
       (values
