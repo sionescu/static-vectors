@@ -10,7 +10,24 @@
 
 (in-suite* :static-vectors)
 
-(test (make-static-vector.plain.notinline
+(test (make-static-vector.defaults
+       :compile-at :definition-time)
+  (let ((v (make-static-vector 5)))
+    (is (= 5 (length v)))
+    (is (equal (array-element-type v)
+               (upgraded-array-element-type
+                '(unsigned-byte 8))))))
+
+(test (make-static-vector.elemen-type.non-literal
+       :compile-at :definition-time)
+  (let* ((element-type '(unsigned-byte 16))
+         (v (make-static-vector 5 :element-type element-type)))
+    (is (= 5 (length v)))
+    (is (equal (array-element-type v)
+               (upgraded-array-element-type
+                '(unsigned-byte 16))))))
+
+(test (make-static-vector.defaults.notinline
        :compile-at :definition-time)
   (locally
       (declare (notinline make-static-vector))
@@ -48,6 +65,39 @@
     (is (equal (array-element-type v)
                (upgraded-array-element-type
                 '(unsigned-byte 16))))))
+
+(test (with-static-vector.element-type.non-literal
+       :compile-at :definition-time)
+  (let ((element-type '(unsigned-byte 16)))
+    (with-static-vector (v 3 :element-type element-type)
+      (is (= 3 (length v)))
+      (is (equal (array-element-type v)
+                 (upgraded-array-element-type
+                  '(unsigned-byte 16)))))))
+
+(test (with-static-vector.initial-element.non-literal
+       :compile-at :definition-time)
+  (let ((element-type '(unsigned-byte 16))
+        (initial-element 5))
+    (with-static-vector (v 3 :element-type element-type
+                             :initial-element initial-element)
+      (is (= 3 (length v)))
+      (is (equal (array-element-type v)
+                 (upgraded-array-element-type
+                  '(unsigned-byte 16))))
+      (is (= 5 (aref v 0))))))
+
+(test (with-static-vector.initial-contents.non-literal
+       :compile-at :definition-time)
+  (let ((element-type '(unsigned-byte 16))
+        (initial-contents '(1 2 3)))
+    (with-static-vector (v 3 :element-type element-type
+                             :initial-contents initial-contents)
+      (is (= 3 (length v)))
+      (is (equal (array-element-type v)
+                 (upgraded-array-element-type
+                  '(unsigned-byte 16))))
+      (is (every #'= v initial-contents)))))
 
 (deftype eltype ()
   '(unsigned-byte 32))

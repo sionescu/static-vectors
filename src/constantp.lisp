@@ -39,12 +39,12 @@
          (length-spec (if (constantp length env)
                           `,(eval-constant length env)
                           '*))
-         (type-decl (if (eql '* element-type)
+         (type-decl (if (eql '* eltype-spec)
                         'simple-array
                         `(simple-array ,eltype-spec (,length-spec)))))
     (values (if (eql '* eltype-spec)
                 element-type
-                eltype-spec)
+                `(quote ,eltype-spec))
             (if (eql '* length-spec)
                 length
                 length-spec)

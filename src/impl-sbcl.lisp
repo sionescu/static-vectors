@@ -89,13 +89,13 @@ VECTOR must be a vector created by MAKE-STATIC-VECTOR."
   "Bind PTR-VAR to a static vector of length LENGTH and execute BODY
 within its dynamic extent. The vector is freed upon exit."
   (declare (ignorable element-type initial-contents initial-element))
-  (multiple-value-bind (real-element-type length type)
+  (multiple-value-bind (real-element-type length type-spec)
       (canonicalize-args env element-type length)
     (remf args :element-type)
     `(sb-sys:without-interrupts
        (let ((,var (make-static-vector ,length ,@args
-                                       :element-type ',real-element-type)))
-         ,.(if type `((declare (type ,type ,var))) nil)
+                                       :element-type ,real-element-type)))
+         (declare (type ,type-spec ,var))
          (unwind-protect
               (sb-sys:with-local-interrupts ,@body)
            (when ,var (free-static-vector ,var)))))))
