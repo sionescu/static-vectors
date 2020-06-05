@@ -18,7 +18,7 @@
                (upgraded-array-element-type
                 '(unsigned-byte 8))))))
 
-(test (make-static-vector.elemen-type.non-literal
+(test (make-static-vector.element-type.non-literal
        :compile-at :definition-time)
   (let* ((element-type '(unsigned-byte 16))
          (v (make-static-vector 5 :element-type element-type)))
