@@ -1,8 +1,9 @@
+os: linux
 dist: bionic
-language: lisp
+language: generic
 
 env:
-  matrix:
+  jobs:
     - LISP=allegro
     - LISP=ccl
     - LISP=ccl32
@@ -11,7 +12,7 @@ env:
     - LISP=sbcl
     - LISP=sbcl32
 
-matrix:
+jobs:
   allow_failures:
     - env: LISP=allegro
     - env: LISP=ccl32
@@ -31,17 +32,10 @@ notifications:
     skip_join: true
 
 install:
-  - if [ "$LISP" = "allegro" ]; then sudo apt-get install libc6-dev-i386 libffi-dev:i386; fi
   - curl -L https://raw.githubusercontent.com/sionescu/cl-travis/master/install.sh | sh
-  - cl -e "(cl:in-package :cl-user)
-           (dolist (p '(:cffi :fiveam))
-             (ql:quickload p :verbose t))"
 
 script:
-  - cl -e "(cl:in-package :cl-user)
-           (ql:quickload :static-vectors/test :verbose t)
+  - cl -e "(ql:quickload :static-vectors/test :verbose t)
            (uiop:quit (if (some (lambda (x) (typep x '5am::test-failure))
                                 (5am:run :static-vectors))
                           1 0))"
-
-sudo: required
