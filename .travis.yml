@@ -36,6 +36,4 @@ install:
 
 script:
   - cl -e "(ql:quickload :static-vectors/test :verbose t)
-           (uiop:quit (if (some (lambda (x) (typep x '5am::test-failure))
-                                (5am:run :static-vectors))
-                          1 0))"
+           (uiop:quit (if (5am:run! :static-vectors) 0 -1))"
