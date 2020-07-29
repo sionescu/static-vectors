@@ -4,20 +4,20 @@ language: generic
 
 env:
   jobs:
-    - LISP=allegro
-    - LISP=ccl
-    - LISP=ccl32
-    - LISP=cmucl
-    - LISP=ecl
     - LISP=sbcl
+    - LISP=ccl
+    - LISP=ecl
+    - LISP=clisp
+    - LISP=allegro
     - LISP=sbcl32
+    - LISP=ccl32
+    # - LISP=cmucl
 
 jobs:
   allow_failures:
-    - env: LISP=allegro
+    - env: LISP=clisp
     - env: LISP=ccl32
-    - env: LISP=cmucl
-    - env: LISP=ecl
+    # - env: LISP=cmucl
 
 notifications:
   email:
