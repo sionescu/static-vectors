@@ -91,11 +91,12 @@ within its dynamic extent. The vector is freed upon exit."
   (declare (ignorable element-type initial-contents initial-element))
   (multiple-value-bind (real-element-type length type-spec)
       (canonicalize-args env element-type length)
-    (remf args :element-type)
-    `(sb-sys:without-interrupts
-       (let ((,var (make-static-vector ,length ,@args
-                                       :element-type ,real-element-type)))
-         (declare (type ,type-spec ,var))
-         (unwind-protect
-              (sb-sys:with-local-interrupts ,@body)
-           (when ,var (free-static-vector ,var)))))))
+    (let ((args (copy-list args)))
+      (remf args :element-type)
+      `(sb-sys:without-interrupts
+         (let ((,var (make-static-vector ,length ,@args
+                                         :element-type ,real-element-type)))
+           (declare (type ,type-spec ,var))
+           (unwind-protect
+                (sb-sys:with-local-interrupts ,@body)
+             (when ,var (free-static-vector ,var))))))))
