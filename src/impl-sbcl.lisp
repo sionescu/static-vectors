@@ -9,7 +9,7 @@
 (defun fill-foreign-memory (pointer length value)
   "Fill LENGTH octets in foreign memory area POINTER with VALUE."
   (declare (sb-ext:muffle-conditions sb-ext:compiler-note))
-  (sb-kernel:system-area-ub8-fill value pointer 0 length)
+  (sb-kernel:ub8-bash-fill value pointer 0 length)
   pointer)
 
 (declaim (inline replace-foreign-memory))
