@@ -37,9 +37,7 @@
 
 (defun %allocate-static-vector (length element-type)
   (labels ((string-widetag-p (widetag)
-             (or (= widetag sb-vm:simple-base-string-widetag)
-                 #+sb-unicode
-                 (= widetag sb-vm:simple-character-string-widetag)))
+             (= widetag sb-vm:simple-character-string-widetag))
            (allocation-size (length widetag n-bits)
              (+ (* 2 sb-vm:n-word-bytes
                    (ceiling
