@@ -8,15 +8,15 @@ env:
     - LISP=ccl
     - LISP=ecl
     - LISP=clisp
-    - LISP=allegro
-    - LISP=sbcl32
-    - LISP=ccl32
+    # - LISP=allegro
+    # - LISP=sbcl32
+    # - LISP=ccl32
     # - LISP=cmucl
 
 jobs:
   allow_failures:
-    - env: LISP=clisp
-    - env: LISP=ccl32
+    # - env: LISP=clisp
+    # - env: LISP=ccl32
     # - env: LISP=cmucl
 
 notifications:
