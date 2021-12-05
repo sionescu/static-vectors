@@ -15,7 +15,7 @@ env:
 
 jobs:
   allow_failures:
-    # - env: LISP=clisp
+    - env: LISP=clisp
     # - env: LISP=ccl32
     # - env: LISP=cmucl
 
