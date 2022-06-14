@@ -7,7 +7,7 @@ env:
     - LISP=sbcl
     - LISP=ccl
     - LISP=ecl
-    - LISP=clisp
+    # - LISP=clisp
     # - LISP=allegro
     # - LISP=sbcl32
     # - LISP=ccl32
@@ -16,7 +16,7 @@ env:
 matrix:
   fast_finish: true
   allow_failures:
-    - env: LISP=clisp
+    # - env: LISP=clisp
     # - env: LISP=ccl32
     # - env: LISP=cmucl
 
