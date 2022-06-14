@@ -3,33 +3,29 @@
 #.(unless (or #+asdf3.1 (version<= "3.1" (asdf-version)))
     (error "You need ASDF >= 3.1 to load this system correctly."))
 
+#-(or abcl allegro clasp ccl cmu ecl lispworks sbcl)
+(error "static-vectors does not support this Common Lisp implementation!")
+
 (defsystem :static-vectors
   :description "Create vectors allocated in static memory."
   :author "Stelian Ionescu <sionescu@cddr.org>"
   :licence "MIT"
   :version (:read-file-form "version.sexp")
-  :defsystem-depends-on (#+(or abcl allegro clasp cmu ecl sbcl) :cffi-grovel)
   :depends-on (:alexandria :cffi)
   :pathname "src/"
+  :serial t
   :components ((:file "pkgdcl")
-               (:file "constantp" :depends-on ("pkgdcl"))
-               #+(or abcl allegro clasp cmu ecl)
-               (:cffi-grovel-file "ffi-types" :depends-on ("pkgdcl"))
-               (:file "impl"
-                      :depends-on ("pkgdcl" "constantp"
-                                   #+(or abcl allegro cmu ecl) "ffi-types")
-                      :pathname #+abcl      "impl-abcl"
-                                #+allegro   "impl-allegro"
-                                #+ccl       "impl-clozure"
-                                #+clasp     "impl-clasp"
-                                #+cmu       "impl-cmucl"
-                                #+ecl       "impl-ecl"
-                                #+lispworks "impl-lispworks"
-                                #+sbcl      "impl-sbcl"
-                                #-(or abcl allegro ccl clasp cmu ecl lispworks sbcl)
-                                  #.(error "static-vectors does not support this Common Lisp implementation!"))
-               (:file "constructor" :depends-on ("pkgdcl" "constantp" "impl"))
-               (:file "cffi-type-translator" :depends-on ("pkgdcl" "impl")))
+               (:file "constantp")
+               (:file "impl-abcl" :if-feature :abcl)
+               (:file "impl-allegro" :if-feature :allegro)
+               (:file "impl-clasp" :if-feature :clasp)
+               (:file "impl-clozure" :if-feature :ccl)
+               (:file "impl-cmucl" :if-feature :cmu)
+               (:file "impl-ecl" :if-feature :ecl)
+               (:file "impl-lispworks" :if-feature :lispworks)
+               (:file "impl-sbcl" :if-feature :sbcl)
+               (:file "constructor")
+               (:file "cffi-type-translator"))
   :in-order-to ((test-op (test-op :static-vectors/test))))
 
 (defsystem :static-vectors/test
