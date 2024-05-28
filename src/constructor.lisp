@@ -39,10 +39,14 @@ but requested vector length is ~A."
   (when initial-contents-p
     (check-initial-contents length initial-contents)))
 
+(defconstant +default-alignment+ 16)
+(defconstant +max-alignment+ 4096)
+
 (declaim (inline make-static-vector))
 (defun make-static-vector (length &key (element-type '(unsigned-byte 8))
                            (initial-element nil initial-element-p)
-                           (initial-contents nil initial-contents-p))
+                           (initial-contents nil initial-contents-p)
+                           (alignment nil alignp))
   "Create a simple vector of length LENGTH and type ELEMENT-TYPE which will
 not be moved by the garbage collector. The vector might be allocated in
 foreign memory so you must always call FREE-STATIC-VECTOR to free it."
@@ -50,8 +54,18 @@ foreign memory so you must always call FREE-STATIC-VECTOR to free it."
            (optimize speed))
   (check-arguments length element-type initial-element initial-element-p
                    initial-contents initial-contents-p)
+  (when alignp
+    ;; Check that the alignment is a power of 2 beteeen 16 and 4096.
+    #+sbcl
+    (assert (and (<= +default-alignment+ alignment +max-alignment+)
+                 (= 1 (logcount alignment))))
+    #-sbcl
+    (error "Allocation alignment not supported on this implementation."))
+  ;; TODO: fix %allocate-static-vector for all implementations
   (let ((vector
-          (%allocate-static-vector length element-type)))
+          (%allocate-static-vector length element-type
+                                   #+sbcl
+                                   (or alignment +default-alignment+))))
     (if initial-element-p
         (fill vector initial-element)
         (replace vector initial-contents))))
