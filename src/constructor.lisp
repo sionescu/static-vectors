@@ -56,10 +56,10 @@ foreign memory so you must always call FREE-STATIC-VECTOR to free it."
                    initial-contents initial-contents-p)
   (when alignp
     ;; Check that the alignment is a power of 2 beteeen 16 and 4096.
-    #+sbcl
+    #+(and sbcl unix)
     (assert (and (<= +default-alignment+ alignment +max-alignment+)
                  (= 1 (logcount alignment))))
-    #-sbcl
+    #-(and sbcl unix)
     (error "Allocation alignment not supported on this implementation."))
   ;; TODO: fix %allocate-static-vector for all implementations
   (let ((vector

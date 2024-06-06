@@ -75,6 +75,7 @@ for a given type specifier."
 
 (declaim (inline %memalign))
 (defun %memalign (size alignment)
+  #+unix
   (with-foreign-object (box :pointer)
     (let ((errno (foreign-funcall "posix_memalign"
                                   :pointer box
@@ -83,7 +84,11 @@ for a given type specifier."
                                   :int)))
       (when (not (zerop errno))
         (error "posix_memalign() returned error ~A" errno))
-      (mem-ref box :pointer))))
+      (mem-ref box :pointer)))
+  #-unix
+  (progn
+    (assert (= alignment 16))
+    (foreign-alloc :char :count size)))
 
 (defun %allocate-static-vector (length element-type alignment)
   (declare (type (unsigned-byte 16) alignment))

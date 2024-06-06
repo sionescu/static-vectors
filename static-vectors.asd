@@ -17,7 +17,7 @@
   :serial t
   :components ((:file "pkgdcl")
                (:file "constantp")
-               (:cffi-grovel-file "ffi-types" :if-feature :sbcl)
+               (:cffi-grovel-file "ffi-types" :if-feature (:and :sbcl :unix))
                (:file "impl-abcl" :if-feature :abcl)
                (:file "impl-allegro" :if-feature :allegro)
                (:file "impl-clasp" :if-feature :clasp)
