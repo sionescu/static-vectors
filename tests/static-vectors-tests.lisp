@@ -50,15 +50,17 @@
       (is (equal 5 (length v)))
       (is (not (mismatch v '(1 2 3 4 5)))))))
 
+#+(and sbcl unix)
 (test (make-static-vector.alignment.correct
        :compile-at :definition-time)
-  (locally
-      (declare (notinline make-static-vector))
-    (let* ((alignment 4096)
-           (v (make-static-vector 5 :alignment alignment))
-           (data-address (pointer-address (static-vector-pointer v))))
-      (is (zerop (rem data-address alignment))))))
+      (locally
+          (declare (notinline make-static-vector))
+        (let* ((alignment 4096)
+               (v (make-static-vector 5 :alignment alignment))
+               (data-address (pointer-address (static-vector-pointer v))))
+          (is (zerop (rem data-address alignment))))))
 
+#+(and sbcl unix)
 (test (make-static-vector.alignment.too-small
        :compile-at :definition-time)
   (locally
@@ -66,6 +68,7 @@
     (signals error
       (make-static-vector 5 :alignment 8))))
 
+#+(and sbcl unix)
 (test (make-static-vector.alignment.too-large
        :compile-at :definition-time)
   (locally
@@ -73,6 +76,7 @@
     (signals error
       (make-static-vector 5 :alignment 8192))))
 
+#+(and sbcl unix)
 (test (make-static-vector.alignment.not-power-2
        :compile-at :definition-time)
   (locally
@@ -80,7 +84,7 @@
     (signals error
       (make-static-vector 5 :alignment 1000))))
 
-#-sbcl
+#-(and sbcl unix)
 (test (make-static-vector.alignment.unsupported
        :compile-at :definition-time)
   (locally

@@ -11,13 +11,14 @@
   :author "Stelian Ionescu <sionescu@cddr.org>"
   :licence "MIT"
   :version (:read-file-form "version.sexp")
-  :defsystem-depends-on (#+sbcl :cffi-grovel)
+  :defsystem-depends-on (#+(and sbcl unix) :cffi-grovel)
   :depends-on (:alexandria :cffi)
   :pathname "src/"
   :serial t
   :components ((:file "pkgdcl")
                (:file "constantp")
-               (:cffi-grovel-file "ffi-types" :if-feature (:and :sbcl :unix))
+               #+(and sbcl unix)
+               (:cffi-grovel-file "ffi-types")
                (:file "impl-abcl" :if-feature :abcl)
                (:file "impl-allegro" :if-feature :allegro)
                (:file "impl-clasp" :if-feature :clasp)
