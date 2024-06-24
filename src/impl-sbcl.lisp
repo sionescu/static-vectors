@@ -79,8 +79,8 @@ for a given type specifier."
   (with-foreign-object (box :pointer)
     (let ((errno (foreign-funcall "posix_memalign"
                                   :pointer box
-                                  size-t alignment
-                                  size-t size
+                                  :size alignment
+                                  :size size
                                   :int)))
       (when (not (zerop errno))
         (error "posix_memalign() returned error ~A" errno))
